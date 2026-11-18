@@ -17,21 +17,21 @@ export default function ReportsList({
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {reports.map(report => (
         <article
           key={report.id}
-          className="group flex min-w-0 flex-col justify-between gap-4 rounded-xl border border-white/10 bg-gradient-to-br from-[#1b1b22] to-[#19191f] p-4 transition duration-200 hover:-translate-y-0.5 hover:border-pink-400/30 hover:shadow-lg hover:shadow-black/10 sm:flex-row sm:flex-wrap sm:items-center"
+          className="group flex min-w-0 flex-col justify-between gap-5 rounded-xl border border-white/10 bg-gradient-to-br from-[#1b1b22] to-[#19191f] p-5 transition duration-200 hover:-translate-y-0.5 hover:border-pink-400/30 hover:shadow-lg hover:shadow-black/10 sm:flex-row sm:flex-wrap sm:items-center sm:p-6"
         >
           <div className="min-w-0 break-words">
             <h3 className="font-semibold">
               {report.location}
             </h3>
 
-            <p className="text-sm text-gray-400 mt-1">
+            <p className="mt-2 text-sm leading-6 text-gray-400">
               Nível da água: {report.waterLevel}
             </p>
-            <p className="text-sm text-gray-400 mt-1">
+            <p className="mt-1 text-sm leading-6 text-gray-400">
               Registrado em: {new Date(report.createdAt).toLocaleString('pt-BR')}
             </p>
 

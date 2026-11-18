@@ -41,9 +41,9 @@ export default function ReportForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 rounded-2xl border border-white/10 bg-[#1b1b22] p-4 sm:p-5"
+      className="space-y-5 rounded-2xl border border-white/10 bg-[#1b1b22] p-5 sm:p-6"
     >
-      <h2 className="text-lg font-semibold">
+      <h2 className="border-b border-white/10 pb-3 text-lg font-semibold">
         {initialReport ? 'Editar relato' : 'Registrar alagamento'}
       </h2>
 
@@ -57,12 +57,12 @@ export default function ReportForm({
           value={location}
           onChange={e => setLocation(e.target.value)}
           placeholder="Informe a localização"
-          className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-[#101014] p-3 outline-none focus:border-pink-500 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400"
+          className="mt-3 min-h-12 w-full rounded-lg border border-white/10 bg-[#101014] p-3 outline-none focus:border-pink-500 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400"
           required
         />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <label htmlFor="report-latitude" className="text-sm text-gray-300">
           Latitude
           <input
@@ -74,7 +74,7 @@ export default function ReportForm({
             onChange={event => setLatitude(event.target.value)}
             id="report-latitude"
             placeholder="Latitude decimal"
-            className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-[#101014] p-3 outline-none focus:border-pink-500 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400"
+            className="mt-3 min-h-12 w-full rounded-lg border border-white/10 bg-[#101014] p-3 outline-none focus:border-pink-500 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400"
             required
             aria-describedby="report-coordinate-help"
           />
@@ -90,13 +90,13 @@ export default function ReportForm({
             value={longitude}
             onChange={event => setLongitude(event.target.value)}
             placeholder="Longitude decimal"
-            className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-[#101014] p-3 outline-none focus:border-pink-500 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400"
+            className="mt-3 min-h-12 w-full rounded-lg border border-white/10 bg-[#101014] p-3 outline-none focus:border-pink-500 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400"
             required
             aria-describedby="report-coordinate-help"
           />
         </label>
       </div>
-      <p id="report-coordinate-help" className="text-xs leading-5 text-gray-400">
+      <p id="report-coordinate-help" className="text-xs leading-6 text-gray-400">
         Informe as coordenadas do local dentro dos limites de Itaquaquecetuba.
       </p>
 
@@ -109,7 +109,7 @@ export default function ReportForm({
           id="report-water-level"
           value={waterLevel}
           onChange={e => setWaterLevel(e.target.value)}
-          className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-[#101014] p-3 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-pink-400"
+          className="mt-3 min-h-12 w-full rounded-lg border border-white/10 bg-[#101014] p-3 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-pink-400"
           required
         >
           <option value="">Selecione</option>

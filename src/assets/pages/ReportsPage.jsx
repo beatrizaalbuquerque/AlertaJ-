@@ -67,8 +67,8 @@ export default function ReportsPage() {
   }
 
   return (
-    <main className="min-w-0 space-y-7 p-4 sm:p-5 md:p-8">
-      <header className="flex items-start gap-4 border-b border-white/10 pb-5">
+    <main className="min-w-0 space-y-8 p-4 sm:p-5 md:space-y-9 md:p-8">
+      <header className="flex items-start gap-5 border-b border-white/10 pb-6">
         <span aria-hidden="true" className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-pink-400/20 bg-pink-500/10 text-pink-300">
           <MapPin size={22} />
         </span>
@@ -95,14 +95,14 @@ export default function ReportsPage() {
       ) : authLoading ? (
         <LoadingState>Verificando sessão...</LoadingState>
       ) : (
-        <aside className="rounded-xl border border-pink-500/20 bg-pink-500/5 p-4 text-sm text-gray-300">
+        <aside className="rounded-xl border border-pink-500/20 bg-pink-500/5 p-5 text-sm leading-6 text-gray-300">
           Entre ou crie uma conta para registrar, votar, editar ou excluir relatos.
           <Link to="/login" className="ml-2 inline-flex min-h-11 items-center text-pink-400 underline focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400">Entrar</Link>
         </aside>
       )}
 
       {success && <FeedbackMessage variant="success">{success}</FeedbackMessage>}
-      <section className="space-y-4">
+      <section className="space-y-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 id="reports-list-heading" tabIndex={-1} className="text-xl font-bold focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-pink-400">Ocorrências registradas</h2>
           <label htmlFor="reports-status-filter" className="flex w-full flex-col gap-2 text-sm text-gray-300 sm:w-auto sm:flex-row sm:items-center">
