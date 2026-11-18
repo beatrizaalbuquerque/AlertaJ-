@@ -7,6 +7,7 @@ import { useReports } from '../hooks/useReports'
 import ConfirmDialog from '../components/ConfirmDialog'
 import FeedbackMessage from '../components/FeedbackMessage'
 import LoadingState from '../components/LoadingState'
+import { MapPin } from 'lucide-react'
 
 const statuses = [
   { value: '', label: 'Todos os status' },
@@ -67,11 +68,17 @@ export default function ReportsPage() {
 
   return (
     <main className="min-w-0 space-y-7 p-4 sm:p-5 md:p-8">
-      <header className="border-b border-white/10 pb-5">
-        <h1 className="text-2xl font-bold">Relatos de alagamento</h1>
-        <p className="mt-1 text-sm text-gray-400">
+      <header className="flex items-start gap-4 border-b border-white/10 pb-5">
+        <span aria-hidden="true" className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-pink-400/20 bg-pink-500/10 text-pink-300">
+          <MapPin size={22} />
+        </span>
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-pink-300">Itaquaquecetuba · SP</p>
+          <h1 className="mt-1 text-2xl font-bold">Relatos de alagamento</h1>
+          <p className="mt-1 text-sm leading-6 text-gray-400">
           Ocorrências comunitárias consultadas diretamente na API.
-        </p>
+          </p>
+        </div>
       </header>
 
       {!authLoading && user ? (

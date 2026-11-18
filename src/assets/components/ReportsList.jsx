@@ -21,7 +21,7 @@ export default function ReportsList({
       {reports.map(report => (
         <article
           key={report.id}
-          className="flex min-w-0 flex-col justify-between gap-4 rounded-xl border border-white/10 bg-[#1b1b22] p-4 sm:flex-row sm:flex-wrap sm:items-center"
+          className="group flex min-w-0 flex-col justify-between gap-4 rounded-xl border border-white/10 bg-gradient-to-br from-[#1b1b22] to-[#19191f] p-4 transition duration-200 hover:-translate-y-0.5 hover:border-pink-400/30 hover:shadow-lg hover:shadow-black/10 sm:flex-row sm:flex-wrap sm:items-center"
         >
           <div className="min-w-0 break-words">
             <h3 className="font-semibold">
