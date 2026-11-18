@@ -26,6 +26,11 @@ export default function StatCard({
       <p className="mt-2 break-words text-xs text-gray-400">
         {description}
       </p>
+      {to && (
+        <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-pink-400 transition group-hover:gap-2 group-hover:text-pink-300">
+          Abrir relatos <span aria-hidden="true">→</span>
+        </span>
+      )}
     </article>
   )
 
