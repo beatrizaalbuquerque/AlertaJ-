@@ -126,7 +126,7 @@ export default function Dashboard() {
 
       <section className="space-y-4">
         <h2 className="text-xl font-bold">
-          Ocorrências recentes.
+          Ocorrências recentes
         </h2>
 
         {loading && (
