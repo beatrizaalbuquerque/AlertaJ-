@@ -14,16 +14,27 @@ finais e a responsabilidade pelo projeto continuam sendo da equipe.
 - Investigar os eventos `ERR_ABORTED` sem presumir que fossem falhas do servidor.
 - Conferir a URL padrão da API com o `.env.example`.
 
-## O que foi feito com esse apoio
+## Parte do front-end
 
-- Foi ajustada a navegação em telas pequenas.
-- Foram organizadas mensagens de carregamento, erro e sucesso e uma confirmação
-  visual para excluir relatos.
-- Foram melhorados rótulos dos campos e indicadores de foco.
-- O cartão de relatos do dashboard ganhou um atalho para a lista.
-- A URL padrão do serviço do front-end foi alinhada à porta 3000, usada pela
-  configuração local da API.
-- README e este arquivo foram revisados.
+O projeto continua usando as páginas e os componentes React que já existiam.
+O front-end está dividido entre páginas, componentes visuais, hooks e um
+serviço central de requisições HTTP. Os hooks cuidam, entre outras coisas, da
+sessão, dos relatos, da região e do clima.
+
+Nos ajustes recentes:
+
+- O menu pode ser aberto e fechado em telas pequenas.
+- A tela de relatos mostra estados de carregamento, erro, lista vazia e
+  confirmação das operações.
+- A exclusão pede confirmação na própria interface.
+- Os campos têm rótulos e indicadores de foco para navegação por teclado.
+- O cartão “Relatos registrados” no dashboard é um link para a lista e indica
+  visualmente que pode ser aberto.
+- O serviço da API usa `http://localhost:3000/api` como endereço padrão, igual
+  ao `.env.example`.
+
+O assistente ajudou a revisar e implementar esses ajustes. README e este
+arquivo também foram atualizados com o apoio da ferramenta.
 
 As sugestões foram comparadas com o código do projeto e verificadas com build,
 lint e testes no navegador. Nenhuma regra do servidor ou estrutura do banco foi
