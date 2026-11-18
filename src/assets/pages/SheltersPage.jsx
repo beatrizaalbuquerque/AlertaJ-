@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { api } from '../services/api'
+import FeedbackMessage from '../components/FeedbackMessage'
+import LoadingState from '../components/LoadingState'
+import EmptyState from '../components/EmptyState'
 
 export default function SheltersPage() {
   const [locations, setLocations] = useState([])
@@ -24,7 +27,7 @@ export default function SheltersPage() {
   }, [loadLocations])
 
   return (
-    <main className="space-y-4 p-5 md:p-8">
+    <main className="min-w-0 space-y-4 p-4 sm:p-5 md:p-8">
       <header>
         <h1 className="text-2xl font-bold">Abrigos e pontos de apoio</h1>
         <p className="mt-1 text-sm text-gray-400">
@@ -32,16 +35,16 @@ export default function SheltersPage() {
         </p>
       </header>
       {error && (
-        <div role="alert" className="flex items-center justify-between gap-3 text-red-400">
-          {error}
-          <button type="button" onClick={loadLocations} className="underline">
+        <FeedbackMessage variant="error">
+          <span>{error}</span>
+          <button type="button" onClick={loadLocations} className="min-h-11 rounded-lg px-3 underline focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400">
             Tentar novamente
           </button>
-        </div>
+        </FeedbackMessage>
       )}
-      <section className="rounded-2xl border border-white/10 bg-[#1b1b22] p-5">
+      <section className="min-w-0 rounded-2xl border border-white/10 bg-[#1b1b22] p-4 sm:p-5">
         {loading ? (
-          <p className="text-sm text-gray-400">Carregando locais...</p>
+          <LoadingState>Carregando locais...</LoadingState>
         ) : locations.length ? (
           <div className="space-y-4">
             {locations.map(location => (
@@ -57,9 +60,9 @@ export default function SheltersPage() {
             ))}
           </div>
         ) : (
-          <p className="text-sm text-gray-400">
+          <EmptyState className="border-0 bg-transparent p-0">
             Nenhum abrigo ou ponto de apoio oficial foi cadastrado para Itaquaquecetuba.
-          </p>
+          </EmptyState>
         )}
       </section>
     </main>

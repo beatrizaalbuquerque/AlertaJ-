@@ -4,6 +4,9 @@ import ReportForm from '../components/ReportForm'
 import ReportsList from '../components/ReportsList'
 import { useAuth } from '../hooks/useAuth'
 import { useReports } from '../hooks/useReports'
+import ConfirmDialog from '../components/ConfirmDialog'
+import FeedbackMessage from '../components/FeedbackMessage'
+import LoadingState from '../components/LoadingState'
 
 const statuses = [
   { value: '', label: 'Todos os status' },
@@ -18,8 +21,9 @@ export default function ReportsPage() {
   const { user, loading: authLoading } = useAuth()
   const [status, setStatus] = useState('')
   const [editing, setEditing] = useState(location.state?.editReport || null)
+  const [pendingDelete, setPendingDelete] = useState(null)
   const {
-    reports, loading, error, saving, loadReports,
+    reports, loading, error, success, saving, loadReports,
     createReport, updateReport, deleteReport, voteReport
   } = useReports(status)
 
@@ -33,14 +37,24 @@ export default function ReportsPage() {
     }
   }
 
-  async function removeReport(id) {
-    if (!window.confirm('Tem certeza de que deseja excluir este relato?')) return
+  async function confirmDelete() {
     try {
-      await deleteReport(id)
-      if (editing?.id === id) setEditing(null)
+      await deleteReport(pendingDelete.id)
+      if (editing?.id === pendingDelete.id) setEditing(null)
     } catch {
       // O erro fica disponível no estado do hook e é exibido na página.
+    } finally {
+      setPendingDelete(null)
+      requestAnimationFrame(() => {
+        document.getElementById('reports-list-heading')?.focus()
+      })
     }
+  }
+
+  function cancelDelete() {
+    const trigger = pendingDelete?.trigger
+    setPendingDelete(null)
+    requestAnimationFrame(() => trigger?.focus())
   }
 
   async function castVote(id, type) {
@@ -52,7 +66,7 @@ export default function ReportsPage() {
   }
 
   return (
-    <main className="space-y-7 p-5 md:p-8">
+    <main className="min-w-0 space-y-7 p-4 sm:p-5 md:p-8">
       <header className="border-b border-white/10 pb-5">
         <h1 className="text-2xl font-bold">Relatos de alagamento</h1>
         <p className="mt-1 text-sm text-gray-400">
@@ -71,22 +85,26 @@ export default function ReportsPage() {
           }}
           saving={saving}
         />
-      ) : !authLoading ? (
+      ) : authLoading ? (
+        <LoadingState>Verificando sessão...</LoadingState>
+      ) : (
         <aside className="rounded-xl border border-pink-500/20 bg-pink-500/5 p-4 text-sm text-gray-300">
           Entre ou crie uma conta para registrar, votar, editar ou excluir relatos.
-          <Link to="/login" className="ml-2 text-pink-400">Entrar</Link>
+          <Link to="/login" className="ml-2 inline-flex min-h-11 items-center text-pink-400 underline focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400">Entrar</Link>
         </aside>
-      ) : null}
+      )}
 
+      {success && <FeedbackMessage variant="success">{success}</FeedbackMessage>}
       <section className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-xl font-bold">Ocorrências registradas</h2>
-          <label className="text-sm text-gray-300">
+          <h2 id="reports-list-heading" tabIndex={-1} className="text-xl font-bold focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-pink-400">Ocorrências registradas</h2>
+          <label htmlFor="reports-status-filter" className="flex w-full flex-col gap-2 text-sm text-gray-300 sm:w-auto sm:flex-row sm:items-center">
             Filtrar
             <select
+              id="reports-status-filter"
               value={status}
               onChange={event => setStatus(event.target.value)}
-              className="ml-2 rounded-lg border border-white/10 bg-[#1b1b22] p-2"
+              className="min-h-11 w-full rounded-lg border border-white/10 bg-[#1b1b22] px-3 py-2 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-pink-400 sm:w-auto"
             >
               {statuses.map(option => (
                 <option key={option.value} value={option.value}>{option.label}</option>
@@ -95,28 +113,40 @@ export default function ReportsPage() {
           </label>
         </div>
         {error && (
-          <div role="alert" className="flex flex-wrap items-center justify-between gap-3 text-red-400">
-            <p>{error}</p>
+          <FeedbackMessage variant="error">
+            <span>{error}</span>
             <button type="button" onClick={async () => {
               try { await loadReports() } catch { /* erro já está exposto pelo hook */ }
-            }} className="underline">
+            }} className="min-h-11 rounded-lg px-3 underline focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400">
               Tentar novamente
             </button>
-          </div>
+          </FeedbackMessage>
         )}
         {loading ? (
-          <p className="text-gray-400">Carregando relatos...</p>
+          <LoadingState>Carregando relatos...</LoadingState>
         ) : !error ? (
           <ReportsList
             reports={reports}
             currentUser={user}
-            onDelete={removeReport}
+            onDelete={(id, trigger) => setPendingDelete({
+              ...reports.find(report => report.id === id),
+              trigger
+            })}
             onEdit={setEditing}
             onVote={castVote}
             saving={saving}
           />
         ) : null}
       </section>
+      {pendingDelete && (
+        <ConfirmDialog
+          title="Excluir relato?"
+          message={`O relato de ${pendingDelete.location} será removido. Esta ação não pode ser desfeita.`}
+          busy={saving}
+          onCancel={cancelDelete}
+          onConfirm={confirmDelete}
+        />
+      )}
     </main>
   )
 }

@@ -14,9 +14,9 @@ import { AuthProvider } from './assets/hooks/AuthProvider'
 export default function App() {
   return (
     <AuthProvider>
-      <div className="min-h-screen bg-[#101014] text-white md:flex">
+      <div className="min-h-screen min-w-0 overflow-x-hidden bg-[#101014] text-white lg:flex">
         <Sidebar />
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/mapa" element={<MapPage />} />

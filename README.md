@@ -1,86 +1,170 @@
 # AlertaJá
 
-Aplicação acadêmica de monitoramento comunitário de relatos de alagamento.
-O front-end existente usa React, Vite e Tailwind CSS; a API separada usa
-Node.js, Express e SQLite.
+Aplicação web acadêmica desenvolvida para a Global Solution da FIAP. O AlertaJá
+reúne informações comunitárias sobre alagamentos e condições meteorológicas
+para a região piloto de Itaquaquecetuba, SP.
 
-## Requisitos
+## Aplicação
 
-- Node.js 20 ou superior
-- npm
+O front-end permite consultar o dashboard, visualizar relatos no mapa, filtrar
+ocorrências por status, registrar e gerenciar relatos autenticados, consultar
+condições meteorológicas e acessar as páginas de abrigos, rotas e orientações.
+Abrigos e pontos de apoio só serão listados quando houver dados oficiais
+cadastrados. A página de rotas informa que o projeto ainda não dispõe de rede
+viária nem algoritmo de roteamento; não apresenta rotas fictícias.
+
+## Tecnologias
+
+- React 19, JavaScript e Vite 8.
+- Tailwind CSS 4.
+- React Router e React Leaflet/Leaflet.
+- API separada em Node.js, Express e SQLite.
+- Open-Meteo para condições meteorológicas atuais.
+
+Requisito de execução do Vite instalado: Node.js `^20.19.0` ou `>=22.12.0` e npm.
+
+## Estrutura principal
+
+```text
+src/
+  App.jsx
+  index.css
+  assets/
+    components/  # Componentes de layout, formulários, listas e mapa
+    data/        # Conteúdo estático aprovado pelo grupo
+    hooks/       # Autenticação, região, relatos e meteorologia
+    pages/       # Páginas da aplicação
+    services/    # Comunicação HTTP com a API
+server/
+  controllers/
+  db/
+  geo/
+  middlewares/
+  routes/
+  services/
+  tests/
+```
 
 ## Instalação e execução
 
-1. Instale as dependências: `npm install`.
-2. Copie `.env.example` para `.env` se ainda não houver configuração local.
-3. Execute `npm run dev` para iniciar a API e o front-end juntos.
+Na raiz do repositório:
 
-Por padrão, a API atende em `http://localhost:3000/api`, o Vite em
-`http://localhost:5173` (ou próxima porta livre), e o banco persistente é criado em
-`server/data/alertaja.sqlite`. `VITE_API_URL` pode apontar o front-end para
-outra URL base da API. Em desenvolvimento, se `SESSION_SECRET` não estiver
-configurado, a API gera um segredo aleatório e o guarda localmente em
-`server/data/session-secret` (pasta ignorada pelo Git). Em produção, configure
-`SESSION_SECRET` com pelo menos 32 caracteres aleatórios. O arquivo `.env`
-não deve ser versionado. `npm run dev:api` e `npm run dev:frontend` continuam
-disponíveis para iniciar os serviços separadamente.
+```bash
+npm install
+```
 
-## Região piloto e fonte geográfica
+Para executar API e front-end juntos:
 
-A região piloto é o município de Itaquaquecetuba, SP (código IBGE `3523107`).
-O polígono versionado em `server/geo/itaquaquecetuba-ibge.geojson` foi obtido
-da [API oficial de Malhas do IBGE](https://servicodados.ibge.gov.br/api/v3/malhas/municipios/3523107?formato=application%2Fvnd.geo%2Bjson&qualidade=maxima),
-solicitando `formato=application/vnd.geo+json` e `qualidade=maxima`. A
-identificação do município foi conferida também na
-[API de Localidades do IBGE](https://servicodados.ibge.gov.br/api/v1/localidades/municipios/3523107).
-O arquivo contém o código oficial `3523107` e o limite municipal em GeoJSON;
-as coordenadas seguem `[longitude, latitude]`. A malha foi consultada em
-16/11/2026 e é mantida localmente para que a validação não dependa de
-disponibilidade da API do IBGE durante a execução.
+```bash
+npm run dev
+```
 
-A validação de ocorrências é feita no backend contra esse polígono. A mesma
-geometria é usada para filtrar consultas individuais e listas, incluindo
-relatos que eventualmente existissem fora do limite. O ponto inicial do mapa
-e as coordenadas da consulta meteorológica são o centroide planar calculado a
-partir do próprio polígono oficial; não são coordenadas escolhidas
-manualmente. A API expõe o limite, o centro e a fonte em `GET /api/region`.
+O Vite informa no terminal a URL local (normalmente `http://localhost:5173`,
+ou a próxima porta livre). A API usa `http://localhost:3000/api` por padrão.
 
-A tabela SQLite `support_locations` e `GET /api/support-locations` deixam
-preparado o catálogo de abrigos (`shelter`) e pontos de apoio
-(`support_point`). Nenhum endereço ou ponto foi pré-cadastrado: a interface
-permanece vazia até que o grupo forneça uma fonte oficial.
+Se a API já estiver iniciada separadamente, execute somente o front-end:
 
-## Endpoints
+```bash
+npm run dev:frontend
+```
 
-- `GET /api/health`: estado da API e da configuração geográfica.
-- `POST /api/auth/register`, `POST /api/auth/login`,
-  `GET /api/auth/me`, `POST /api/auth/logout`.
-- `GET /api/reports?status=...`, `GET /api/reports/:id`.
-- `POST /api/reports`, `PUT /api/reports/:id`, `DELETE /api/reports/:id`.
-- `POST /api/reports/:id/votes` com `{"type":"confirm"}` ou
-  `{"type":"contest"}`.
+Para iniciar a API separadamente:
 
-A autenticação usa sessão em cookie HttpOnly persistido em SQLite. Senhas são
-armazenadas com bcrypt. Apenas o autor pode editar ou remover seu relato.
-Cada usuário pode votar uma vez em cada relato de outra pessoa. Duas
-confirmações de moradores diferentes do autor confirmam o relato. Contestações
-são registradas, mas não alteram o status. Relatos sem confirmação nova por
-três horas são encerrados automaticamente e não são considerados elegíveis
-para rotas.
+```bash
+npm run dev:api
+```
 
-O limite de cinco relatos por hora é aplicado no backend. Somente coordenadas
-dentro do município de Itaquaquecetuba são aceitas ou incluídas nas consultas.
+O front-end centraliza as chamadas HTTP em `src/assets/services/api.js` e
+utiliza cookies de sessão (`credentials: 'include'`). A URL-base configurável
+para o Vite é `VITE_API_URL`; por padrão, o projeto usa
+`http://localhost:3000/api`.
 
-## Meteorologia
+## Variáveis de ambiente
 
-O hook existente consulta condições atuais na Open-Meteo usando o centroide
-derivado dos limites oficiais de Itaquaquecetuba. Esses dados não são alertas
-oficiais. O modelo do grupo
-`f(t) = -2t² + 12t + 5` tem integral de 0 a 6 horas igual a 102 mm acumulados
-no modelo, sem representar uma previsão meteorológica.
+O arquivo `.env.example` contém valores de desenvolvimento para o projeto
+integrado. Crie uma cópia local antes de alterar configurações:
 
-## Verificações
+```powershell
+Copy-Item .env.example .env
+```
 
-- `npm run build`
-- `npm run lint`
-- `npm run test:api`
+Variáveis:
+
+| Variável | Uso |
+|---|---|
+| `VITE_API_URL` | URL-base da API consumida pelo front-end |
+| `PORT` | Porta da API |
+| `FRONTEND_URL` | Origem do front-end permitida pela API |
+| `DATABASE_PATH` | Caminho do SQLite |
+| `SESSION_SECRET` | Segredo da sessão; obrigatório em produção, com pelo menos 32 caracteres aleatórios |
+
+Para executar só o front-end, a variável necessária é `VITE_API_URL` quando a API
+não estiver na URL padrão. Não coloque credenciais no código nem versione o
+arquivo `.env`. Em desenvolvimento local, o servidor gera e persiste um segredo
+de sessão quando ele não é fornecido; em produção, deve ser configurado
+explicitamente.
+
+## Integração e dados
+
+As páginas de relatos, mapa e dashboard consomem os dados da API. Cadastro e
+login usam sessão no servidor; operações de escrita dependem de autenticação.
+A API valida a região piloto e aplica as regras de negócio. A aplicação não
+substitui respostas da API por dados fictícios.
+
+A região é Itaquaquecetuba (código IBGE `3523107`). O mapa municipal utilizado
+pela API está versionado em
+`server/geo/itaquaquecetuba-ibge.geojson` e provém da
+[API oficial de Malhas do IBGE](https://servicodados.ibge.gov.br/api/v3/malhas/municipios/3523107?formato=application%2Fvnd.geo%2Bjson&qualidade=maxima).
+O centro usado pelo mapa e pela consulta meteorológica é calculado a partir
+desse polígono.
+O clima vem da Open-Meteo e não equivale a alerta oficial da Defesa Civil.
+
+## Deploy
+
+Não há URL de deploy configurada ou registrada neste repositório. A aplicação
+deve ser executada localmente seguindo as instruções acima até que a equipe
+publique e valide um endereço oficial.
+
+## Testes e validação
+
+Comandos disponíveis:
+
+```bash
+npm run build
+npm run lint
+npm run test:api
+```
+
+Os testes da API usam bancos em memória e, no teste de persistência, uma pasta
+temporária removida ao final; eles não devem alterar o banco local da aplicação.
+
+Na validação de interface registrada em 18/11/2026 e na rodada final de
+comandos executada para esta entrega:
+
+- `npm run build` e `npm run lint` passaram.
+- `npm run test:api` passou com 6 testes.
+- As 9 rotas foram verificadas em larguras de 360, 390, 768, 820, 1366 e 1440 px;
+  não houve overflow nos elementos visíveis verificados.
+- Menu móvel, navegação, filtros, formulários, mapa e clima foram verificados.
+- O CRUD foi exercitado pela interface com dados de teste sintéticos: criação,
+  consulta após recarga, edição e exclusão com confirmação.
+- O logout retornou HTTP 204; `GET /api/auth/me` retornou `user: null` e uma
+  operação protegida sem sessão retornou HTTP 401.
+- Uma tentativa de criação acima do limite de cinco relatos por hora recebeu
+  HTTP 429; a operação recusada não criou um relato.
+- Foram observados eventos `ERR_ABORTED` em algumas exclusões e no logout,
+  inclusive quando as mesmas requisições tiveram respostas HTTP 204. A causa
+  exata não foi comprovada e o evento está documentado como ponto a investigar,
+  não como falha confirmada do servidor.
+- Os relatos temporários foram removidos e sua ausência foi confirmada em nova
+  consulta.
+
+Uma conta sintética usada na validação permanece cadastrada: não existe fluxo
+de remoção de conta nem procedimento autorizado de limpeza documentado. Não foi
+feita exclusão direta no banco. Não use credenciais reais para reproduzir testes;
+consulte `AI.md` para o registro detalhado da validação e de suas limitações.
+
+## Uso de IA
+
+O registro do uso de inteligência artificial, exemplos de prompts, alterações,
+verificações e limitações está em [AI.md](./AI.md).

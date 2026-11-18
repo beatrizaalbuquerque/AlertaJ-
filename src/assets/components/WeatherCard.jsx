@@ -1,5 +1,7 @@
 import { CloudRain, Droplets, Thermometer } from 'lucide-react'
 import { useWeather } from '../hooks/useWeather'
+import FeedbackMessage from './FeedbackMessage'
+import LoadingState from './LoadingState'
 
 export default function WeatherCard({
   latitude,
@@ -10,19 +12,19 @@ export default function WeatherCard({
     useWeather(latitude, longitude)
 
   if (loading) {
-    return <div className="bg-[#1b1b22] rounded-2xl p-5">
-      Consultando previsão meteorológica...
+    return <div className="rounded-2xl border border-white/10 bg-[#1b1b22] p-5">
+      <LoadingState>Consultando dados meteorológicos...</LoadingState>
     </div>
   }
 
   if (error) {
-    return <div className="bg-[#1b1b22] rounded-2xl p-5">
-      Não foi possível consultar os dados meteorológicos.
+    return <div className="rounded-2xl border border-white/10 bg-[#1b1b22] p-5">
+      <FeedbackMessage variant="error">{error}</FeedbackMessage>
     </div>
   }
 
   if (!weather) {
-    return <div className="bg-[#1b1b22] rounded-2xl p-5">
+    return <div className="rounded-2xl border border-white/10 bg-[#1b1b22] p-5">
       Localização necessária para consultar o clima.
     </div>
   }
@@ -33,7 +35,7 @@ export default function WeatherCard({
         Condições meteorológicas{locationName ? ` — ${locationName}` : ''}
       </h2>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-3">
         <div>
           <Thermometer className="text-pink-400 mb-2" />
           <p className="text-xl font-bold">
@@ -65,7 +67,7 @@ export default function WeatherCard({
         </div>
       </div>
 
-      <p className="text-xs text-gray-500 mt-5">
+      <p className="mt-5 text-xs text-gray-400">
         Fonte: Open-Meteo. Dados meteorológicos, não um alerta oficial.
       </p>
     </section>

@@ -2,6 +2,8 @@ import { useReports } from '../hooks/useReports'
 import ReportsList from '../components/ReportsList'
 import RiskMap from '../components/RiskMap'
 import { useRegion } from '../hooks/useRegion'
+import FeedbackMessage from '../components/FeedbackMessage'
+import LoadingState from '../components/LoadingState'
 
 export default function MapPage() {
   const { reports, loading, error, loadReports } = useReports()
@@ -10,7 +12,7 @@ export default function MapPage() {
   } = useRegion()
 
   return (
-    <main className="space-y-6 p-5 md:p-8">
+    <main className="min-w-0 space-y-6 p-4 sm:p-5 md:p-8">
       <header>
         <h1 className="text-2xl font-bold">Mapa de ocorrências</h1>
         <p className="mt-1 text-sm text-gray-400">
@@ -20,17 +22,17 @@ export default function MapPage() {
         </p>
       </header>
       {(error || regionError) && (
-        <div role="alert" className="flex items-center justify-between gap-3 text-red-400">
-          {error || regionError}
+        <FeedbackMessage variant="error">
+          <span>{error || regionError}</span>
           <button type="button" onClick={async () => {
             if (error) {
               try { await loadReports() } catch { /* erro já está exposto pelo hook */ }
             }
             if (regionError) await loadRegion()
-          }} className="underline">Tentar novamente</button>
-        </div>
+          }} className="min-h-11 rounded-lg px-3 underline focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400">Tentar novamente</button>
+        </FeedbackMessage>
       )}
-      {loading || regionLoading ? <p className="text-gray-400">Carregando ocorrências...</p> : (
+      {loading || regionLoading ? <LoadingState>Carregando ocorrências e limites oficiais...</LoadingState> : (
         <>
           {region && (
             <RiskMap

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import FeedbackMessage from './FeedbackMessage'
 
 export default function ReportForm({
   onSubmit,
@@ -40,7 +41,7 @@ export default function ReportForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-[#1b1b22] rounded-2xl p-5 space-y-4"
+      className="space-y-4 rounded-2xl border border-white/10 bg-[#1b1b22] p-4 sm:p-5"
     >
       <h2 className="text-lg font-semibold">
         {initialReport ? 'Editar relato' : 'Registrar alagamento'}
@@ -56,13 +57,13 @@ export default function ReportForm({
           value={location}
           onChange={e => setLocation(e.target.value)}
           placeholder="Informe a localização"
-          className="w-full mt-2 p-3 rounded-lg bg-[#101014] border border-white/10 outline-none focus:border-pink-500"
+          className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-[#101014] p-3 outline-none focus:border-pink-500 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400"
           required
         />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <label className="text-sm text-gray-300">
+        <label htmlFor="report-latitude" className="text-sm text-gray-300">
           Latitude
           <input
             type="number"
@@ -71,26 +72,33 @@ export default function ReportForm({
             max="90"
             value={latitude}
             onChange={event => setLatitude(event.target.value)}
-            placeholder="-23.5505"
-            className="w-full mt-2 p-3 rounded-lg bg-[#101014] border border-white/10 outline-none focus:border-pink-500"
+            id="report-latitude"
+            placeholder="Latitude decimal"
+            className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-[#101014] p-3 outline-none focus:border-pink-500 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400"
             required
+            aria-describedby="report-coordinate-help"
           />
-        </label>
-        <label className="text-sm text-gray-300">
-          Longitude
-          <input
-            type="number"
+          </label>
+          <label htmlFor="report-longitude" className="text-sm text-gray-300">
+            Longitude
+            <input
+              id="report-longitude"
+              type="number"
             step="any"
             min="-180"
             max="180"
             value={longitude}
             onChange={event => setLongitude(event.target.value)}
-            placeholder="-46.6333"
-            className="w-full mt-2 p-3 rounded-lg bg-[#101014] border border-white/10 outline-none focus:border-pink-500"
+            placeholder="Longitude decimal"
+            className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-[#101014] p-3 outline-none focus:border-pink-500 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400"
             required
+            aria-describedby="report-coordinate-help"
           />
         </label>
       </div>
+      <p id="report-coordinate-help" className="text-xs leading-5 text-gray-400">
+        Informe as coordenadas do local dentro dos limites de Itaquaquecetuba.
+      </p>
 
       <div>
         <label htmlFor="report-water-level" className="text-sm text-gray-300">
@@ -101,7 +109,7 @@ export default function ReportForm({
           id="report-water-level"
           value={waterLevel}
           onChange={e => setWaterLevel(e.target.value)}
-          className="w-full mt-2 p-3 rounded-lg bg-[#101014] border border-white/10"
+          className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-[#101014] p-3 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-pink-400"
           required
         >
           <option value="">Selecione</option>
@@ -111,12 +119,12 @@ export default function ReportForm({
         </select>
       </div>
 
-      {formError && <p role="alert" className="text-sm text-red-400">{formError}</p>}
+      {formError && <FeedbackMessage variant="error">{formError}</FeedbackMessage>}
 
       <button
         type="submit"
         disabled={saving}
-        className="w-full bg-pink-600 hover:bg-pink-500 disabled:opacity-50 rounded-lg p-3 font-semibold"
+        className="min-h-11 w-full rounded-lg bg-pink-600 p-3 font-semibold transition hover:bg-pink-500 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-300 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {saving ? 'Salvando...' : initialReport ? 'Salvar alterações' : 'Enviar relato'}
       </button>
@@ -125,7 +133,7 @@ export default function ReportForm({
           type="button"
           onClick={onCancel}
           disabled={saving}
-          className="w-full rounded-lg border border-white/10 p-3 text-gray-300 hover:bg-white/5"
+          className="min-h-11 w-full rounded-lg border border-white/10 p-3 text-gray-300 transition hover:bg-white/5 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Cancelar edição
         </button>

@@ -1,5 +1,6 @@
 import { Trash2 } from 'lucide-react'
 import RiskBadge from './RiskBadge'
+import EmptyState from './EmptyState'
 
 export default function ReportsList({
   reports,
@@ -11,9 +12,7 @@ export default function ReportsList({
 }) {
   if (!reports.length) {
     return (
-      <p className="text-gray-400">
-        Nenhum relato disponível.
-      </p>
+      <EmptyState>Nenhum relato disponível.</EmptyState>
     )
   }
 
@@ -22,9 +21,9 @@ export default function ReportsList({
       {reports.map(report => (
         <article
           key={report.id}
-          className="bg-[#1b1b22] border border-white/10 rounded-xl p-4 flex flex-wrap justify-between gap-3"
+          className="flex min-w-0 flex-col justify-between gap-4 rounded-xl border border-white/10 bg-[#1b1b22] p-4 sm:flex-row sm:flex-wrap sm:items-center"
         >
-          <div>
+          <div className="min-w-0 break-words">
             <h3 className="font-semibold">
               {report.location}
             </h3>
@@ -36,31 +35,31 @@ export default function ReportsList({
               Registrado em: {new Date(report.createdAt).toLocaleString('pt-BR')}
             </p>
 
-            <div className="flex gap-2 mt-3">
+            <div className="mt-3 flex flex-wrap items-center gap-2">
               <RiskBadge level={report.status} />
-              <span className="text-xs text-gray-400 self-center">
+              <span className="text-xs leading-5 text-gray-400">
                 {report.confirmations} confirmações · {report.contests} contestações
               </span>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 sm:justify-end">
             {currentUser?.id === report.authorId ? (
               <>
                 <button
                   type="button"
                   onClick={() => onEdit(report)}
                   disabled={saving}
-                  className="rounded-lg border border-white/10 px-3 py-2 text-sm text-gray-200 hover:bg-white/5"
+                  className="min-h-11 rounded-lg border border-white/10 px-4 py-2 text-sm text-gray-200 transition hover:bg-white/5 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Editar
                 </button>
                 <button
                   type="button"
-                  onClick={() => onDelete(report.id)}
-                  disabled={saving}
+                  onClick={event => onDelete?.(report.id, event.currentTarget)}
+                  disabled={saving || !onDelete}
                   aria-label="Excluir relato"
-                  className="text-red-400 hover:text-red-300 p-2"
+                  className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 text-red-400 transition hover:bg-red-500/10 hover:text-red-300 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-300 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <Trash2 size={18} />
                 </button>
@@ -71,7 +70,7 @@ export default function ReportsList({
                   type="button"
                   onClick={() => onVote(report.id, 'confirm')}
                   disabled={saving}
-                  className="rounded-lg bg-green-700/40 px-3 py-2 text-sm text-green-200 hover:bg-green-700/60"
+                  className="min-h-11 rounded-lg bg-green-700/40 px-4 py-2 text-sm text-green-200 transition hover:bg-green-700/60 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-300 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Confirmar
                 </button>
@@ -79,7 +78,7 @@ export default function ReportsList({
                   type="button"
                   onClick={() => onVote(report.id, 'contest')}
                   disabled={saving}
-                  className="rounded-lg bg-yellow-700/30 px-3 py-2 text-sm text-yellow-200 hover:bg-yellow-700/50"
+                  className="min-h-11 rounded-lg bg-yellow-700/30 px-4 py-2 text-sm text-yellow-200 transition hover:bg-yellow-700/50 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-300 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Contestar
                 </button>

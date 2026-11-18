@@ -1,23 +1,23 @@
 import { useEffect, useState } from 'react'
 
 export function useWeather(latitude, longitude) {
-  const [weather, setWeather] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const coordinatesKey = latitude == null || longitude == null
+    ? ''
+    : `${latitude},${longitude}`
+  const [request, setRequest] = useState({
+    key: '',
+    weather: null,
+    loading: false,
+    error: ''
+  })
 
   useEffect(() => {
-    if (
-      latitude == null ||
-      longitude == null
-    ) return
+    if (!coordinatesKey) return undefined
 
     const controller = new AbortController()
 
     async function loadWeather() {
       try {
-        setLoading(true)
-        setError('')
-
         const params = new URLSearchParams({
           latitude: String(latitude),
           longitude: String(longitude),
@@ -38,24 +38,36 @@ export function useWeather(latitude, longitude) {
 
         const data = await response.json()
 
-        setWeather(data)
-      } catch (err) {
-        if (err.name !== 'AbortError') {
-          setError(err.message)
+        if (!controller.signal.aborted) {
+          setRequest({
+            key: coordinatesKey,
+            weather: data,
+            loading: false,
+            error: ''
+          })
         }
-      } finally {
-        setLoading(false)
+      } catch (err) {
+        if (err.name !== 'AbortError' && !controller.signal.aborted) {
+          setRequest({
+            key: coordinatesKey,
+            weather: null,
+            loading: false,
+            error: 'Não foi possível consultar os dados meteorológicos.'
+          })
+        }
       }
     }
 
     loadWeather()
 
     return () => controller.abort()
-  }, [latitude, longitude])
+  }, [latitude, longitude, coordinatesKey])
+
+  const currentRequest = request.key === coordinatesKey
 
   return {
-    weather,
-    loading,
-    error
+    weather: currentRequest ? request.weather : null,
+    loading: Boolean(coordinatesKey) && (!currentRequest || request.loading),
+    error: currentRequest ? request.error : ''
   }
 }

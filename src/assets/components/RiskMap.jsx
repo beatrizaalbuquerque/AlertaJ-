@@ -13,19 +13,19 @@ export default function RiskMap({
 }) {
   if (!center) {
     return (
-      <div className="bg-[#1b1b22] rounded-2xl p-6">
+      <div className="rounded-2xl bg-[#1b1b22] p-5 text-sm leading-6 text-gray-300 sm:p-6">
         Não foi possível carregar o centro da região piloto.
       </div>
     )
   }
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-white/10">
+    <section className="h-72 overflow-hidden rounded-2xl border border-white/10 sm:h-96 lg:h-[420px]" aria-label="Mapa de riscos e ocorrências">
       <MapContainer
         center={center}
         zoom={12}
         scrollWheelZoom={true}
-        style={{ height: '420px', width: '100%' }}
+        className="h-full w-full"
       >
         <TileLayer
           attribution='&copy; OpenStreetMap contributors'

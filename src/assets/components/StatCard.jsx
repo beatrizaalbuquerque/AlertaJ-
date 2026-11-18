@@ -5,22 +5,22 @@ export default function StatCard({
   icon: Icon
 }) {
   return (
-    <article className="bg-[#1b1b22] border border-white/10 rounded-2xl p-5">
+    <article className="min-w-0 rounded-2xl border border-white/10 bg-[#1b1b22] p-4 sm:p-5">
       <div className="flex justify-between items-center">
-        <p className="text-gray-400 text-sm">
+        <p className="min-w-0 break-words text-sm text-gray-400">
           {title}
         </p>
 
         {Icon && (
-          <Icon className="text-pink-400" size={22} />
+          <Icon className="shrink-0 text-pink-400" size={22} aria-hidden="true" />
         )}
       </div>
 
-      <h2 className="text-3xl font-bold mt-4">
+      <p className="mt-4 break-words text-2xl font-bold sm:text-3xl">
         {value}
-      </h2>
+      </p>
 
-      <p className="text-gray-500 text-xs mt-2">
+      <p className="mt-2 break-words text-xs text-gray-400">
         {description}
       </p>
     </article>
