@@ -74,6 +74,7 @@ export default function Dashboard() {
           value={reports.length}
           description="Registros retornados pela API"
           icon={MapPin}
+          to="/relatos"
         />
 
         <StatCard
