@@ -76,8 +76,9 @@ npm run dev:api
 
 O front-end centraliza as chamadas HTTP em `src/assets/services/api.js` e
 utiliza cookies de sessão (`credentials: 'include'`). A URL-base configurável
-para o Vite é `VITE_API_URL`; por padrão, o projeto usa
-`http://localhost:3000/api`.
+para o Vite é `VITE_API_URL`. Em desenvolvimento, o padrão é
+`http://localhost:3000/api`; em produção, o front-end usa `/api` na mesma origem,
+salvo se `VITE_API_URL` for definida no ambiente de build.
 
 ## Variáveis de ambiente
 
@@ -121,32 +122,18 @@ O clima vem da Open-Meteo e não equivale a alerta oficial da Defesa Civil.
 
 ## Deploy
 
-O repositório inclui uma configuração inicial de hospedagem da API no Render
-(`render.yaml`) e de encaminhamento de `/api` pelo Vercel (`vercel.json`). O
-serviço Render usa um disco persistente para o SQLite; esse tipo de serviço
-exige um plano pago. Revise e confirme o custo no painel do Render antes de
-criar o serviço.
+Deploy publicado: [https://alerta-ja.vercel.app](https://alerta-ja.vercel.app).
+A API está hospedada separadamente e é encaminhada pelo proxy configurado em
+`vercel.json`; o front-end usa a mesma origem (`/api`) para preservar os cookies
+de sessão. Na verificação de 19/11/2026, `/api/health`, `/api/reports` e
+`/api/region` responderam HTTP 200 pelo domínio da Vercel.
 
-Para publicar:
-
-1. Importe este repositório no Render como Blueprint e revise o serviço
-   `alertaja-api`, as variáveis e o disco persistente. O Render gera
-   `SESSION_SECRET` automaticamente.
-2. Crie o serviço e confirme no painel o domínio `onrender.com` atribuído.
-   Se o domínio for diferente de `https://alertaja-api.onrender.com`, atualize
-   o destino do rewrite em `vercel.json` para o domínio real, mantendo o
-   caminho `/api/:path*`.
-3. Na Vercel, configure `VITE_API_URL` como `/api` para produção e publique um
-   novo deploy. Se havia uma URL `localhost` nessa variável, substitua-a.
-4. Verifique `https://alerta-ja.vercel.app/api/health` e depois teste login,
-   cadastro e operações de relatos pela interface.
-
-O proxy mantém as chamadas e os cookies de sessão na origem do front-end. Não
-configure a URL pública do Render diretamente em `VITE_API_URL`, pois a sessão
-usa cookies `SameSite=Strict`. A API permite a origem de produção por meio de
-`FRONTEND_URL`, definida no `render.yaml` como
-`https://alerta-ja.vercel.app`. A publicação precisa ser concluída nas contas
-Render e Vercel da equipe; não há credenciais de hospedagem no repositório.
+O arquivo `render.yaml` descreve o serviço Render e o disco persistente do
+SQLite. Para conferir ou atualizar o deploy, compare o domínio atribuído no
+painel do Render com o destino em `vercel.json`. Após mudar essa configuração,
+publique um novo deploy da Vercel. Operações de escrita no ambiente publicado
+devem ser testadas somente com uma conta de teste autorizada; os testes de CRUD
+automatizados usam banco isolado.
 
 ## Testes e validação
 
@@ -191,3 +178,9 @@ consulte `AI.md` para o registro detalhado da validação e de suas limitações
 
 O registro do uso de inteligência artificial, exemplos de prompts, alterações,
 verificações e limitações está em [AI.md](./AI.md).
+
+## Integrantes:
+
+Nicole Couto - RM: 569191
+Beatriz Albuquerque - RM: 572055
+Leticia Couto - RM: 569516

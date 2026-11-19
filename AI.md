@@ -13,6 +13,26 @@ finais e a responsabilidade pelo projeto continuam sendo da equipe.
 - Verificar rótulos, contraste, foco e navegação por teclado.
 - Investigar os eventos `ERR_ABORTED` sem presumir que fossem falhas do servidor.
 - Conferir a URL padrão da API com o `.env.example`.
+- “Remover a necessidade de digitar manualmente latitude e longitude” e permitir
+  definir o ponto do relato com geolocalização ou no mapa.
+- Revisar a seção “Prevenir” sem inventar conteúdo não aprovado pela equipe.
+
+## Exemplos de respostas e uso no projeto
+
+- Para o pedido de facilitar a localização, o assistente identificou que o
+  formulário precisava continuar enviando `location`, `latitude`, `longitude`
+  e `waterLevel`. A solução implementada substituiu a digitação das
+  coordenadas por geolocalização do navegador e seleção de ponto no mapa.
+  Também foi explicado que não havia busca automática de endereço no projeto:
+  o endereço ou bairro é descrito pelo usuário e o ponto correspondente é
+  marcado no mapa.
+- Para o pedido sobre “Prevenir”, a resposta foi manter a página e deixar
+  explícito que as orientações aprovadas ainda não foram cadastradas, em vez de
+  escrever recomendações sem validação do grupo.
+- Na investigação de `ERR_ABORTED`, a conclusão registrada foi que houve
+  respostas HTTP 204, 401 e 429 em operações específicas, mas a causa exata de
+  `ERR_ABORTED` não foi comprovada. O evento não foi descrito como falha
+  confirmada do servidor.
 
 ## Parte do front-end
 
@@ -28,26 +48,34 @@ Nos ajustes recentes:
   confirmação das operações.
 - A exclusão pede confirmação na própria interface.
 - Os campos têm rótulos e indicadores de foco para navegação por teclado.
+- O formulário de relatos oferece geolocalização do dispositivo e seleção
+  manual do ponto no mapa municipal, sem exigir que a pessoa conheça
+  coordenadas. Endereço ou bairro continua sendo informado como descrição.
 - O cartão “Relatos registrados” no dashboard é um link para a lista e indica
   visualmente que pode ser aberto.
-- O serviço da API usa `http://localhost:3000/api` como endereço padrão, igual
-  ao `.env.example`.
+- O serviço HTTP usa `http://localhost:3000/api` em desenvolvimento local e
+  `/api` em produção, salvo configuração por `VITE_API_URL`.
 
 O assistente ajudou a revisar e implementar esses ajustes. README e este
 arquivo também foram atualizados com o apoio da ferramenta.
 
 As sugestões foram comparadas com o código do projeto e verificadas com build,
-lint e testes no navegador. Nenhuma regra do servidor ou estrutura do banco foi
-alterada nessas revisões.
+lint e testes no navegador. Na melhoria de localização, nenhuma regra do
+servidor, endpoint ou estrutura do banco foi alterada.
 
 ## Verificações registradas
 
-- `npm run build`: passou na última execução registrada em 18/11/2026.
-- `npm run lint`: passou na última execução registrada em 18/11/2026.
-- `npm run test:api`: 6 testes passaram na última execução registrada em
-  18/11/2026.
+- Em 19/11/2026, `npm run build` e `npm run lint` passaram após os ajustes de
+  localização e da página Prevenção.
+- Em 19/11/2026, `npm run test:api` passou com 6 testes.
 - No navegador, foram verificadas 9 páginas em larguras de 360, 390, 768, 820,
   1366 e 1440 px, além de navegação, filtros, formulários, mapa e clima.
+- Em uma API e um banco temporários isolados, foram testados localização
+  concedida e recusada, rejeição de ponto fora da região, seleção pelo mapa e
+  criação de relato. A requisição manteve latitude e longitude como números.
+  O banco temporário foi removido após o teste.
+- A página “Prevenção” abriu e informou que ainda não há conteúdo aprovado. Em
+  360 px, a tela testada não apresentou overflow horizontal.
 - Um teste de interface com conta sintética cobriu criação, consulta após
   recarregar, edição, exclusão e logout.
 - A exclusão respondeu HTTP 204; após atualizar, o relato não apareceu.
@@ -64,8 +92,13 @@ alterada nessas revisões.
 ## Limitações
 
 Os testes de acessibilidade foram básicos; não foi feita avaliação completa com
-leitor de tela. Não há endereço de deploy confirmado no projeto. A aplicação
-também não calcula rotas nem lista abrigos sem dados oficiais fornecidos.
+leitor de tela. A busca automática de endereço não foi implementada: o endereço
+ou bairro é digitado como descrição e o ponto é escolhido no mapa. A página
+“Prevenção” ainda depende de conteúdo aprovado pelo grupo. O endereço da
+Vercel e a API Render responderam HTTP 200 em consultas GET de saúde, região e
+relatos em 19/11/2026. Não foi feito CRUD com dados de produção nessa verificação.
+A aplicação também não calcula rotas nem lista abrigos sem dados oficiais
+fornecidos.
 
 A IA ajudou a acelerar algumas tarefas, mas suas sugestões precisaram ser
 conferidas: uma sugestão pode não corresponder ao código ou ao comportamento
