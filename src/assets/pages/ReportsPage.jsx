@@ -7,13 +7,31 @@ import { useReports } from '../hooks/useReports'
 import ConfirmDialog from '../components/ConfirmDialog'
 import FeedbackMessage from '../components/FeedbackMessage'
 import LoadingState from '../components/LoadingState'
-import { MapPin } from 'lucide-react'
+import { ClipboardList, MapPin, MapPinned, UsersRound } from 'lucide-react'
 
 const statuses = [
   { value: '', label: 'Todos os status' },
   { value: 'não confirmado', label: 'Não confirmados' },
   { value: 'confirmado', label: 'Confirmados' },
   { value: 'encerrado', label: 'Encerrados' }
+]
+
+const reportSteps = [
+  {
+    icon: ClipboardList,
+    title: 'Descreva o local',
+    description: 'Informe uma rua, avenida ou bairro.'
+  },
+  {
+    icon: MapPinned,
+    title: 'Marque o ponto',
+    description: 'Use sua localização ou escolha no mapa.'
+  },
+  {
+    icon: UsersRound,
+    title: 'Ajude a comunidade',
+    description: 'Consulte e confira relatos de outros moradores.'
+  }
 ]
 
 export default function ReportsPage() {
@@ -27,6 +45,9 @@ export default function ReportsPage() {
     reports, loading, error, success, saving, loadReports,
     createReport, updateReport, deleteReport, voteReport
   } = useReports(status)
+  const emptyMessage = status
+    ? `Nenhum relato com o status "${statuses.find(option => option.value === status)?.label}".`
+    : 'Ainda não há relatos registrados. Você pode iniciar o acompanhamento pela região.'
 
   async function submitReport(input) {
     if (editing) {
@@ -76,10 +97,32 @@ export default function ReportsPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-pink-300">Itaquaquecetuba · SP</p>
           <h1 className="mt-1 text-2xl font-bold">Relatos de alagamento</h1>
           <p className="mt-1 text-sm leading-6 text-gray-400">
-          Ocorrências comunitárias consultadas diretamente na API.
+            Consulte ocorrências da região e contribua com relatos comunitários.
           </p>
         </div>
       </header>
+
+      <section aria-label="Como registrar e acompanhar relatos">
+        <ol className="grid gap-3 sm:grid-cols-3">
+          {reportSteps.map(({ icon: Icon, title, description }, index) => (
+            <li
+              key={title}
+              className="flex items-start gap-3 rounded-xl border border-white/10 bg-[#1b1b22] p-4"
+            >
+              <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-pink-500/10 text-pink-300">
+                <Icon size={18} aria-hidden="true" />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-gray-100">
+                  <span className="mr-1 text-pink-300">{index + 1}.</span>
+                  {title}
+                </p>
+                <p className="mt-1 text-xs leading-5 text-gray-400">{description}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
 
       {!authLoading && user ? (
         <ReportForm
@@ -104,7 +147,14 @@ export default function ReportsPage() {
       {success && <FeedbackMessage variant="success">{success}</FeedbackMessage>}
       <section className="space-y-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 id="reports-list-heading" tabIndex={-1} className="text-xl font-bold focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-pink-400">Ocorrências registradas</h2>
+          <div>
+            <h2 id="reports-list-heading" tabIndex={-1} className="text-xl font-bold focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-pink-400">Ocorrências registradas</h2>
+            {!loading && !error && (
+              <p className="mt-1 text-sm text-gray-400" aria-live="polite">
+                {reports.length} {reports.length === 1 ? 'relato encontrado' : 'relatos encontrados'}
+              </p>
+            )}
+          </div>
           <label htmlFor="reports-status-filter" className="flex w-full flex-col gap-2 text-sm text-gray-300 sm:w-auto sm:flex-row sm:items-center">
             Filtrar
             <select
@@ -119,6 +169,9 @@ export default function ReportsPage() {
             </select>
           </label>
         </div>
+        <p className="text-xs leading-5 text-gray-400">
+          “Não confirmado” aguarda validação; “confirmado” recebeu confirmações de moradores; “encerrado” indica que o relato não está mais ativo.
+        </p>
         {error && (
           <FeedbackMessage variant="error">
             <span>{error}</span>
@@ -134,6 +187,7 @@ export default function ReportsPage() {
         ) : !error ? (
           <ReportsList
             reports={reports}
+            emptyMessage={emptyMessage}
             currentUser={user}
             onDelete={(id, trigger) => setPendingDelete({
               ...reports.find(report => report.id === id),

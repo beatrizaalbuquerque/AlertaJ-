@@ -72,9 +72,10 @@ export default function Dashboard() {
         <StatCard
           title="Relatos registrados"
           value={reports.length}
-          description="Registros retornados pela API"
+          description="Ocorrências informadas por moradores"
           icon={MapPin}
           to="/relatos"
+          tone="pink"
         />
 
         <StatCard
@@ -82,22 +83,26 @@ export default function Dashboard() {
           value={reports.filter(
             item => item.status === 'confirmado'
           ).length}
-          description="Conforme status recebido da API"
+          description="Confirmadas pela comunidade"
           icon={AlertTriangle}
+          tone="orange"
         />
 
         <StatCard
           title="Condições do tempo"
-          value="Open-Meteo"
-          description="Condições meteorológicas"
+          value="Agora"
+          description="Dados meteorológicos locais"
           icon={CloudRain}
+          tone="blue"
         />
 
         <StatCard
           title="Abrigos"
-          value="Consultar"
-          description="Locais cadastrados na base"
+          value="Ver locais"
+          description="Pontos cadastrados na base"
           icon={House}
+          to="/abrigos"
+          tone="teal"
         />
       </section>
 
@@ -106,17 +111,19 @@ export default function Dashboard() {
         longitude={center?.[1] ?? null}
         locationName={region ? `${region.name}, ${region.state}` : ''}
       />
-      <p className="text-xs text-gray-400">
+      <p className="border-l-2 border-pink-400/40 pl-3 text-xs leading-5 text-gray-500">
         Modelo matemático do grupo: f(t) = -2t² + 12t + 5. Integral de 0 a 6 horas: 102 mm acumulados no modelo; este valor não é uma previsão meteorológica.
       </p>
 
       <section className="space-y-4">
-        <h2 id="dashboard-reports-heading" tabIndex={-1} className="text-xl font-bold focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-pink-400">
+        <div>
+          <h2 id="dashboard-reports-heading" tabIndex={-1} className="text-xl font-semibold tracking-tight focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-pink-400">
           Mapa de monitoramento
-        </h2>
-        <p className="text-sm text-gray-400">
-          Limite municipal oficial de {region?.name || 'Itaquaquecetuba'} — {region?.state || 'SP'}.
-        </p>
+          </h2>
+          <p className="mt-1.5 text-sm text-gray-500">
+            Limite municipal oficial de {region?.name || 'Itaquaquecetuba'} — {region?.state || 'SP'}.
+          </p>
+        </div>
 
         <RiskMap
           center={center}
@@ -126,7 +133,7 @@ export default function Dashboard() {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-bold">
+        <h2 className="text-xl font-semibold tracking-tight">
           Ocorrências recentes
         </h2>
 

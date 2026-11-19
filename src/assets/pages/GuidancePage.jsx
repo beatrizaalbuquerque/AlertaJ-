@@ -1,7 +1,6 @@
 import { guidance } from '../data/guidance'
 import GuidanceCard from '../components/GuidanceCard'
-import EmptyState from '../components/EmptyState'
-import { BookOpenCheck } from 'lucide-react'
+import { BookOpenCheck, ExternalLink } from 'lucide-react'
 
 export default function GuidancePage() {
   return (
@@ -13,22 +12,25 @@ export default function GuidancePage() {
         <div>
           <h1 className="text-2xl font-bold">Prevenção</h1>
           <p className="mt-2 text-sm leading-6 text-gray-400">
-            Orientações preventivas cadastradas pela equipe do AlertaJá.
+            Informações úteis durante e após alagamentos e inundações.
           </p>
         </div>
       </header>
-      {guidance.length ? (
-        <section className="grid gap-4 md:grid-cols-2">
-          {guidance.map(item => <GuidanceCard key={item.title} {...item} />)}
-        </section>
-      ) : (
-        <section className="rounded-2xl border border-white/10 bg-[#1b1b22] p-5 sm:p-6">
-          <h2 className="text-lg font-semibold">Conteúdo ainda não disponível</h2>
-          <EmptyState className="mt-4">
-            As orientações aprovadas pelo grupo ainda não foram cadastradas. Nenhuma recomendação foi adicionada sem validação da equipe.
-          </EmptyState>
-        </section>
-      )}
+      <section aria-label="Orientações de prevenção" className="grid gap-4 md:grid-cols-2">
+        {guidance.map(item => <GuidanceCard key={item.title} {...item} />)}
+      </section>
+      <aside className="rounded-xl border border-pink-500/20 bg-pink-500/5 p-4 text-sm leading-6 text-gray-300">
+        Em situações de emergência, siga os avisos e as instruções das autoridades locais.
+        <a
+          href="https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/e/enchentes"
+          target="_blank"
+          rel="noreferrer"
+          className="mt-2 inline-flex min-h-11 items-center gap-2 font-medium text-pink-300 underline underline-offset-4 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400"
+        >
+          Fonte: Ministério da Saúde — Enchentes
+          <ExternalLink size={15} aria-hidden="true" />
+        </a>
+      </aside>
     </main>
   )
 }

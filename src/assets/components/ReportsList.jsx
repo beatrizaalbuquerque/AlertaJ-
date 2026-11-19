@@ -8,11 +8,12 @@ export default function ReportsList({
   onEdit,
   onVote,
   currentUser,
-  saving = false
+  saving = false,
+  emptyMessage = 'Nenhum relato disponível.'
 }) {
   if (!reports.length) {
     return (
-      <EmptyState>Nenhum relato disponível.</EmptyState>
+      <EmptyState>{emptyMessage}</EmptyState>
     )
   }
 
