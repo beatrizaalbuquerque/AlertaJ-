@@ -20,7 +20,7 @@ export default function RiskMap({
   }
 
   return (
-    <section className="h-72 overflow-hidden rounded-2xl border border-white/10 sm:h-96 lg:h-[420px]" aria-label="Mapa de riscos e ocorrências">
+    <section className="h-72 overflow-hidden border-y border-white/10 sm:h-96 lg:h-[440px]" aria-label="Mapa de riscos e ocorrências">
       <MapContainer
         center={center}
         zoom={12}
@@ -62,6 +62,10 @@ export default function RiskMap({
                 <strong>{report.location}</strong>
                 <br />
                 Status: {report.status}
+                <br />
+                Nível da água: {report.waterLevel}
+                <br />
+                Registrado em: {new Date(report.createdAt).toLocaleString('pt-BR')}
               </Popup>
             </Marker>
           )

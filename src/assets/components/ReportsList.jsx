@@ -1,4 +1,4 @@
-import { Trash2 } from 'lucide-react'
+import { CalendarDays, MapPin, Trash2, Waves } from 'lucide-react'
 import RiskBadge from './RiskBadge'
 import EmptyState from './EmptyState'
 
@@ -18,33 +18,35 @@ export default function ReportsList({
   }
 
   return (
-    <div className="space-y-4">
+    <ul className="divide-y divide-white/[0.08] border-y border-white/[0.08]">
       {reports.map(report => (
-        <article
-          key={report.id}
-          className="group flex min-w-0 flex-col justify-between gap-5 rounded-xl border border-white/10 bg-gradient-to-br from-[#1b1b22] to-[#19191f] p-5 transition duration-200 hover:-translate-y-0.5 hover:border-pink-400/30 hover:shadow-lg hover:shadow-black/10 sm:flex-row sm:flex-wrap sm:items-center sm:p-6"
-        >
-          <div className="min-w-0 break-words">
-            <h3 className="font-semibold">
-              {report.location}
-            </h3>
-
-            <p className="mt-2 text-sm leading-6 text-gray-400">
-              Nível da água: {report.waterLevel}
-            </p>
-            <p className="mt-1 text-sm leading-6 text-gray-400">
-              Registrado em: {new Date(report.createdAt).toLocaleString('pt-BR')}
-            </p>
-
-            <div className="mt-3 flex flex-wrap items-center gap-2">
-              <RiskBadge level={report.status} />
-              <span className="text-xs leading-5 text-gray-400">
-                {report.confirmations} confirmações · {report.contests} contestações
-              </span>
+        <li key={report.id} className="list-none">
+          <article className="group flex min-w-0 flex-col justify-between gap-4 py-4 transition-colors hover:bg-white/[0.015] sm:flex-row sm:flex-wrap sm:items-center sm:gap-6 sm:px-3">
+            <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
+            <span aria-hidden="true" className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-500/10 text-sky-300">
+              <MapPin size={17} />
+            </span>
+            <div className="min-w-0 flex-1 break-words">
+              <h3 className="font-medium text-gray-100">{report.location}</h3>
+              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-500">
+                <span className="inline-flex items-center gap-1.5">
+                  <Waves size={14} aria-hidden="true" />
+                  Nível da água: {report.waterLevel}
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <CalendarDays size={14} aria-hidden="true" />
+                  {new Date(report.createdAt).toLocaleString('pt-BR')}
+                </span>
+              </div>
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <RiskBadge level={report.status} />
+                <span className="text-xs leading-5 text-gray-500">
+                  {report.confirmations} confirmações · {report.contests} contestações
+                </span>
+              </div>
             </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+            </div>
+            <div className="flex flex-wrap items-center gap-2 sm:justify-end">
             {currentUser?.id === report.authorId ? (
               <>
                 <button
@@ -85,9 +87,10 @@ export default function ReportsList({
                 </button>
               </>
             ) : null}
-          </div>
-        </article>
+            </div>
+          </article>
+        </li>
       ))}
-    </div>
+    </ul>
   )
 }

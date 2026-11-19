@@ -1,31 +1,38 @@
 import { guidance } from '../data/guidance'
 import GuidanceCard from '../components/GuidanceCard'
-import { BookOpenCheck, ExternalLink } from 'lucide-react'
+import { ExternalLink, ShieldCheck } from 'lucide-react'
 
 export default function GuidancePage() {
   return (
-    <main className="min-w-0 space-y-6 p-4 sm:p-5 md:p-8">
-      <header className="flex items-start gap-4 border-b border-white/10 pb-5">
-        <span aria-hidden="true" className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-pink-400/20 bg-pink-500/10 text-pink-300">
-          <BookOpenCheck size={22} />
-        </span>
+    <main className="min-w-0 space-y-6 p-4 sm:p-5 md:space-y-8 md:p-8">
+      <header className="flex flex-wrap items-end justify-between gap-4 border-b border-white/10 pb-5">
         <div>
-          <h1 className="text-2xl font-bold">Prevenção</h1>
-          <p className="mt-2 text-sm leading-6 text-gray-400">
-            Informações úteis durante e após alagamentos e inundações.
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-pink-300">Informação para prevenção</p>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">Prevenção</h1>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-400">
+            Cuidados de saúde e segurança durante e após alagamentos.
           </p>
         </div>
+        <span aria-hidden="true" className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-pink-300/15 text-pink-300">
+          <ShieldCheck size={20} />
+        </span>
       </header>
-      <section aria-label="Orientações de prevenção" className="grid gap-4 md:grid-cols-2">
-        {guidance.map(item => <GuidanceCard key={item.title} {...item} />)}
+      <section aria-label="Orientações de prevenção" className="max-w-4xl">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h2 className="text-sm font-medium text-gray-300">Orientações essenciais</h2>
+          <span className="text-xs text-gray-600">Selecione para ler</span>
+        </div>
+        {guidance.map((item, index) => (
+          <GuidanceCard key={item.title} {...item} index={index} />
+        ))}
       </section>
-      <aside className="rounded-xl border border-pink-500/20 bg-pink-500/5 p-4 text-sm leading-6 text-gray-300">
-        Em situações de emergência, siga os avisos e as instruções das autoridades locais.
+      <aside className="max-w-4xl border-l-2 border-pink-300/50 py-1 pl-4 text-sm leading-6 text-gray-400">
+        Em uma emergência, siga os avisos e as instruções das autoridades locais.
         <a
           href="https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/e/enchentes"
           target="_blank"
           rel="noreferrer"
-          className="mt-2 inline-flex min-h-11 items-center gap-2 font-medium text-pink-300 underline underline-offset-4 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400"
+          className="mt-2 inline-flex min-h-11 items-center gap-2 font-medium text-pink-300 underline underline-offset-4 hover:text-pink-200 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400"
         >
           Fonte: Ministério da Saúde — Enchentes
           <ExternalLink size={15} aria-hidden="true" />
