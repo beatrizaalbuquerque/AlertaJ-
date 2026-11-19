@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom'
 
 const tones = {
-  pink: 'bg-pink-500/10 text-pink-300 ring-pink-400/15',
-  orange: 'bg-orange-500/10 text-orange-300 ring-orange-400/15',
-  blue: 'bg-sky-500/10 text-sky-300 ring-sky-400/15',
-  teal: 'bg-teal-500/10 text-teal-300 ring-teal-400/15'
+  pink: { border: 'border-pink-400', icon: 'text-pink-300' },
+  orange: { border: 'border-orange-300', icon: 'text-orange-200' },
+  blue: { border: 'border-sky-300', icon: 'text-sky-200' },
+  teal: { border: 'border-teal-300', icon: 'text-teal-200' }
 }
 
 export default function StatCard({
@@ -15,20 +15,23 @@ export default function StatCard({
   to,
   tone = 'pink'
 }) {
+  const colors = tones[tone] || tones.pink
   const card = (
-    <article className="h-full min-w-0 rounded-2xl border border-white/[0.08] bg-[#17171d] p-4 transition duration-200 group-hover:-translate-y-0.5 group-hover:border-white/[0.14] group-hover:bg-[#1b1b22] sm:p-5">
+    <article className={`group h-full min-w-0 border-l-2 ${colors.border} py-3 pl-4 pr-3 transition-colors group-hover:bg-white/[0.025] sm:py-4 sm:pl-5`}>
       <div className="flex items-start justify-between gap-3">
         <p className="min-w-0 break-words pt-1 text-sm font-medium text-gray-400">
           {title}
         </p>
         {Icon && (
-          <span className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset ${tones[tone] || tones.pink}`}>
-            <Icon size={19} aria-hidden="true" />
-          </span>
+          <Icon
+            size={18}
+            aria-hidden="true"
+            className={`mt-0.5 shrink-0 ${colors.icon}`}
+          />
         )}
       </div>
 
-      <p className="mt-5 break-words text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+      <p className="mt-4 break-words font-mono text-3xl font-medium tracking-tight text-white sm:text-4xl">
         {value}
       </p>
 
@@ -36,7 +39,7 @@ export default function StatCard({
         {description}
       </p>
       {to && (
-        <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-pink-300 transition group-hover:gap-2.5 group-hover:text-pink-200">
+        <span className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-pink-300 transition group-hover:gap-2 group-hover:text-pink-200">
           {to === '/abrigos' ? 'Ver abrigos' : 'Ver ocorrências'}
           <span aria-hidden="true">→</span>
         </span>
@@ -50,7 +53,7 @@ export default function StatCard({
     <Link
       to={to}
       aria-label={`${title}: ${value}. ${description}.`}
-      className="group block h-full rounded-2xl focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400"
+      className="group block h-full rounded-sm focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400"
     >
       {card}
     </Link>

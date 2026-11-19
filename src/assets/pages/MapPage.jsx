@@ -68,16 +68,18 @@ export default function MapPage() {
         </label>
       </header>
 
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-white/[0.07] pb-4 text-sm">
-        <span className="inline-flex items-center gap-2 text-gray-300">
-          <MapPin size={16} className="text-sky-300" aria-hidden="true" />
-          {mappedReports.length} {mappedReports.length === 1 ? 'marcador' : 'marcadores'} no mapa
-        </span>
-        <span className="inline-flex items-center gap-2 text-gray-500">
-          <Waves size={16} aria-hidden="true" />
-          {openCount} ocorrências não encerradas
-        </span>
-      </div>
+      {!loading && !error && (
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-white/[0.07] pb-4 text-sm">
+          <span className="inline-flex items-center gap-2 text-gray-300">
+            <MapPin size={16} className="text-sky-300" aria-hidden="true" />
+            {mappedReports.length} {mappedReports.length === 1 ? 'marcador' : 'marcadores'} no mapa
+          </span>
+          <span className="inline-flex items-center gap-2 text-gray-500">
+            <Waves size={16} aria-hidden="true" />
+            {openCount} ocorrências não encerradas
+          </span>
+        </div>
+      )}
 
       {(error || regionError) && (
         <FeedbackMessage variant="error">

@@ -3,7 +3,9 @@ import { ChevronDown } from 'lucide-react'
 export default function GuidanceCard({
   title,
   description,
-  index
+  index,
+  source,
+  sourceUrl
 }) {
   return (
     <details className="group border-b border-white/[0.09] py-4 first:border-t">
@@ -23,6 +25,16 @@ export default function GuidanceCard({
       <p className="pb-2 pl-12 pr-8 pt-2 text-sm leading-6 text-gray-400">
         {description}
       </p>
+      {source && sourceUrl && (
+        <a
+          href={sourceUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="mb-2 ml-12 inline-flex min-h-10 items-center text-xs text-pink-300 underline underline-offset-2 hover:text-pink-200 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-300"
+        >
+          Fonte: {source}
+        </a>
+      )}
     </details>
   )
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { fetchCurrentWeather } from '../services/weatherService'
 
 export function useWeather(latitude, longitude) {
   const coordinatesKey = latitude == null || longitude == null
@@ -18,25 +19,7 @@ export function useWeather(latitude, longitude) {
 
     async function loadWeather() {
       try {
-        const params = new URLSearchParams({
-          latitude: String(latitude),
-          longitude: String(longitude),
-          current: 'temperature_2m,precipitation,rain',
-          hourly: 'precipitation,precipitation_probability',
-          forecast_days: '1',
-          timezone: 'auto'
-        })
-
-        const response = await fetch(
-          `https://api.open-meteo.com/v1/forecast?${params}`,
-          { signal: controller.signal }
-        )
-
-        if (!response.ok) {
-          throw new Error('Falha ao consultar meteorologia')
-        }
-
-        const data = await response.json()
+        const data = await fetchCurrentWeather(latitude, longitude, controller.signal)
 
         if (!controller.signal.aborted) {
           setRequest({
@@ -52,7 +35,7 @@ export function useWeather(latitude, longitude) {
             key: coordinatesKey,
             weather: null,
             loading: false,
-            error: 'Não foi possível consultar os dados meteorológicos.'
+            error: err.message || 'Não foi possível consultar os dados meteorológicos.'
           })
         }
       }

@@ -27,16 +27,27 @@ export default function GuidancePage() {
         ))}
       </section>
       <aside className="max-w-4xl border-l-2 border-pink-300/50 py-1 pl-4 text-sm leading-6 text-gray-400">
-        Em uma emergência, siga os avisos e as instruções das autoridades locais.
-        <a
-          href="https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/e/enchentes"
-          target="_blank"
-          rel="noreferrer"
-          className="mt-2 inline-flex min-h-11 items-center gap-2 font-medium text-pink-300 underline underline-offset-4 hover:text-pink-200 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400"
-        >
-          Fonte: Ministério da Saúde — Enchentes
-          <ExternalLink size={15} aria-hidden="true" />
-        </a>
+        <p>Em uma emergência, siga os avisos e as instruções das autoridades locais.</p>
+        <div className="mt-1 flex flex-wrap gap-x-5 gap-y-1">
+          <a
+            href="https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/e/enchentes/enchentes"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex min-h-11 items-center gap-2 font-medium text-pink-300 underline underline-offset-4 hover:text-pink-200 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400"
+          >
+            Ministério da Saúde — Enchentes
+            <ExternalLink size={15} aria-hidden="true" />
+          </a>
+          <a
+            href="https://www.defesacivil.sp.gov.br/dicas-de-prevencao/"
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex min-h-11 items-center gap-2 font-medium text-pink-300 underline underline-offset-4 hover:text-pink-200 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400"
+          >
+            Defesa Civil SP — Dicas de prevenção
+            <ExternalLink size={15} aria-hidden="true" />
+          </a>
+        </div>
       </aside>
     </main>
   )

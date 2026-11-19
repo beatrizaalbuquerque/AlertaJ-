@@ -10,8 +10,9 @@ O front-end permite consultar o dashboard, visualizar relatos no mapa, filtrar
 ocorrências por status, registrar e gerenciar relatos autenticados, consultar
 condições meteorológicas e acessar as páginas de abrigos, rotas e orientações.
 Abrigos e pontos de apoio só serão listados quando houver dados oficiais
-cadastrados. A página de rotas informa que o projeto ainda não dispõe de rede
-viária nem algoritmo de roteamento; não apresenta rotas fictícias.
+cadastrados. A página de rotas consulta trajetos viários pelo serviço público
+OSRM quando não há relatos confirmados carregados; caso existam, bloqueia o
+cálculo porque o roteador não consegue excluir pontos de alagamento.
 
 ## Tecnologias
 
@@ -20,6 +21,7 @@ viária nem algoritmo de roteamento; não apresenta rotas fictícias.
 - React Router e React Leaflet/Leaflet.
 - API separada em Node.js, Express e SQLite.
 - Open-Meteo para condições meteorológicas atuais.
+- OSRM público e dados OpenStreetMap para consulta de trajetos viários.
 
 Requisito de execução do Vite instalado: Node.js `^20.19.0` ou `>=22.12.0` e npm.
 
@@ -31,10 +33,10 @@ src/
   index.css
   assets/
     components/  # Componentes de layout, formulários, listas e mapa
-    data/        # Conteúdo estático aprovado pelo grupo
-    hooks/       # Autenticação, região, relatos e meteorologia
+    data/        # Conteúdos e referências de orientação
+    hooks/       # Autenticação, região, relatos, meteorologia e rotas
     pages/       # Páginas da aplicação
-    services/    # Comunicação HTTP com a API
+    services/    # Comunicação com API, Open-Meteo e OSRM
 server/
   controllers/
   db/
@@ -118,7 +120,25 @@ pela API está versionado em
 [API oficial de Malhas do IBGE](https://servicodados.ibge.gov.br/api/v3/malhas/municipios/3523107?formato=application%2Fvnd.geo%2Bjson&qualidade=maxima).
 O centro usado pelo mapa e pela consulta meteorológica é calculado a partir
 desse polígono.
-O clima vem da Open-Meteo e não equivale a alerta oficial da Defesa Civil.
+O clima vem da Open-Meteo por `src/assets/services/weatherService.js` e não
+equivale a alerta oficial da Defesa Civil.
+
+A página de rotas usa `src/assets/services/routeService.js` para consultar o
+serviço público OSRM. Origem e destino são escolhidos no mapa. O serviço pode
+ficar indisponível ou limitado e não avalia as condições atuais das vias. Como
+ele não exclui pontos de alagamento, a interface bloqueia o cálculo quando há
+relatos confirmados na região e mostra seus marcadores. Os resultados não são
+apresentados como rotas seguras. A página não faz geocodificação de endereços.
+
+As orientações de prevenção incluem referências ao Ministério da Saúde e à
+Defesa Civil do Estado de São Paulo. A lista de abrigos permanece sem locais
+inventados; quando estiver vazia, informa que os dados oficiais estão em
+processo de cadastramento.
+
+## Links
+
+- GitHub: [beatrizaalbuquerque/AlertaJ-](https://github.com/beatrizaalbuquerque/AlertaJ-)
+- Aplicação publicada: [https://alerta-ja.vercel.app](https://alerta-ja.vercel.app)
 
 ## Deploy
 
@@ -127,6 +147,8 @@ A API está hospedada separadamente e é encaminhada pelo proxy configurado em
 `vercel.json`; o front-end usa a mesma origem (`/api`) para preservar os cookies
 de sessão. Na verificação de 19/11/2026, `/api/health`, `/api/reports` e
 `/api/region` responderam HTTP 200 pelo domínio da Vercel.
+Na revisão final, a rota de saúde da API no Render também respondeu HTTP 200.
+Esta revisão não publicou nem atualizou o deploy.
 
 O arquivo `render.yaml` descreve o serviço Render e o disco persistente do
 SQLite. Para conferir ou atualizar o deploy, compare o domínio atribuído no
@@ -154,8 +176,15 @@ comandos executada para esta entrega:
 - `npm run build` e `npm run lint` passaram.
 - `npm run test:api` passou com 6 testes.
 - As 9 rotas foram verificadas em larguras de 360, 390, 768, 820, 1366 e 1440 px;
-  não houve overflow nos elementos visíveis verificados.
-- Menu móvel, navegação, filtros, formulários, mapa e clima foram verificados.
+  não houve overflow horizontal nos elementos verificados.
+- Menu móvel, navegação, filtros de mapa e alertas, busca de abrigos, painéis
+  expansíveis, seleção de pontos no mapa de rotas e consulta meteorológica foram
+  verificados no navegador.
+- A consulta pública OSRM retornou um trajeto GeoJSON em teste de conectividade.
+  A interface bloqueia a consulta quando relatos confirmados existem ou quando
+  não foi possível carregar os relatos.
+- A resposta atual da Open-Meteo foi conferida: coordenadas do centro municipal,
+  horário, valores e unidades retornados pela API.
 - O CRUD foi exercitado pela interface com dados de teste sintéticos: criação,
   consulta após recarga, edição e exclusão com confirmação.
 - O logout retornou HTTP 204; `GET /api/auth/me` retornou `user: null` e uma
@@ -181,6 +210,6 @@ verificações e limitações está em [AI.md](./AI.md).
 
 ## Integrantes:
 
-Nicole Couto - RM: 569191
-Beatriz Albuquerque - RM: 572055
-Leticia Couto - RM: 569516
+Nicole Couto — RM 569191
+Beatriz Albuquerque — RM 572055
+Leticia Couto — RM 569516

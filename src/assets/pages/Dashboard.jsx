@@ -65,13 +65,16 @@ export default function Dashboard() {
   }
 
   return (
-    <main className="min-w-0 space-y-7 p-4 sm:p-5 md:p-8">
+    <main className="min-w-0 space-y-7 p-4 sm:p-6 md:space-y-8 md:p-9">
       <Header />
 
-      <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <section
+        aria-label="Resumo do monitoramento"
+        className="grid grid-cols-1 divide-y divide-white/[0.08] border-y border-white/[0.08] sm:grid-cols-2 sm:divide-y-0 xl:grid-cols-4"
+      >
         <StatCard
           title="Relatos registrados"
-          value={reports.length}
+          value={loading || error ? '—' : reports.length}
           description="Ocorrências informadas por moradores"
           icon={MapPin}
           to="/relatos"
@@ -80,7 +83,7 @@ export default function Dashboard() {
 
         <StatCard
           title="Ocorrências confirmadas"
-          value={reports.filter(
+          value={loading || error ? '—' : reports.filter(
             item => item.status === 'confirmado'
           ).length}
           description="Confirmadas pela comunidade"
@@ -106,23 +109,34 @@ export default function Dashboard() {
         />
       </section>
 
-      <WeatherCard
-        latitude={center?.[0] ?? null}
-        longitude={center?.[1] ?? null}
-        locationName={region ? `${region.name}, ${region.state}` : ''}
-      />
-      <p className="border-l-2 border-pink-400/40 pl-3 text-xs leading-5 text-gray-500">
-        Modelo matemático do grupo: f(t) = -2t² + 12t + 5. Integral de 0 a 6 horas: 102 mm acumulados no modelo; este valor não é uma previsão meteorológica.
-      </p>
+      <div className="grid gap-3 lg:grid-cols-[minmax(0,1.35fr)_minmax(260px,0.65fr)] lg:items-stretch">
+        <WeatherCard
+          latitude={center?.[0] ?? null}
+          longitude={center?.[1] ?? null}
+          locationName={region ? `${region.name}, ${region.state}` : ''}
+        />
+        <details className="group flex flex-col justify-center border-y border-white/[0.08] px-4 py-4 sm:px-5">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium text-gray-300 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-400 [&::-webkit-details-marker]:hidden">
+            Modelo matemático do grupo
+            <span aria-hidden="true" className="font-mono text-pink-300 transition-transform group-open:rotate-45">+</span>
+          </summary>
+          <p className="max-w-prose pb-2 pt-2 text-xs leading-5 text-gray-500">
+            f(t) = -2t² + 12t + 5. A integral de 0 a 6 horas resulta em 102 mm acumulados no modelo; este valor não é uma previsão meteorológica.
+          </p>
+        </details>
+      </div>
 
       <section className="space-y-4">
-        <div>
-          <h2 id="dashboard-reports-heading" tabIndex={-1} className="text-xl font-semibold tracking-tight focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-pink-400">
-          Mapa de monitoramento
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-[0.12em] text-sky-300">Visão territorial</p>
+            <h2 id="dashboard-reports-heading" tabIndex={-1} className="mt-1 text-xl font-semibold tracking-tight focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-pink-400">
+              Mapa de monitoramento
           </h2>
-          <p className="mt-1.5 text-sm text-gray-500">
-            Limite municipal oficial de {region?.name || 'Itaquaquecetuba'} — {region?.state || 'SP'}.
-          </p>
+            <p className="mt-1.5 text-sm text-gray-500">
+              Limite municipal oficial de {region?.name || 'Itaquaquecetuba'} — {region?.state || 'SP'}.
+            </p>
+          </div>
         </div>
 
         <RiskMap
@@ -133,9 +147,12 @@ export default function Dashboard() {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold tracking-tight">
-          Ocorrências recentes
-        </h2>
+        <div className="flex items-end justify-between border-b border-white/[0.08] pb-3">
+          <div>
+            <p className="text-xs font-medium uppercase tracking-[0.12em] text-pink-300">Atividade comunitária</p>
+            <h2 className="mt-1 text-xl font-semibold tracking-tight">Ocorrências recentes</h2>
+          </div>
+        </div>
 
         {loading && (
           <LoadingState>Carregando registros...</LoadingState>

@@ -29,6 +29,9 @@ finais e a responsabilidade pelo projeto continuam sendo da equipe.
 - Para o pedido sobre “Prevenir”, a resposta foi manter a página e deixar
   explícito que as orientações aprovadas ainda não foram cadastradas, em vez de
   escrever recomendações sem validação do grupo.
+- Na revisão final, a equipe pediu conteúdo preventivo baseado em fontes
+  públicas. Foram incluídas orientações com links para o Ministério da Saúde e
+  para a Defesa Civil de São Paulo, sem inventar contatos de emergência.
 - Na investigação de `ERR_ABORTED`, a conclusão registrada foi que houve
   respostas HTTP 204, 401 e 429 em operações específicas, mas a causa exata de
   `ERR_ABORTED` não foi comprovada. O evento não foi descrito como falha
@@ -55,6 +58,17 @@ Nos ajustes recentes:
   visualmente que pode ser aberto.
 - O serviço HTTP usa `http://localhost:3000/api` em desenvolvimento local e
   `/api` em produção, salvo configuração por `VITE_API_URL`.
+- A revisão final adicionou consulta de trajetos com OSRM e seleção de origem e
+  destino no mapa. O assistente verificou que o serviço respondeu com geometria
+  GeoJSON; como ele não permite excluir pontos confirmados, a interface bloqueia
+  o cálculo quando há relatos confirmados e os exibe como marcadores. Os
+  resultados não são chamados de seguros.
+- A chamada à Open-Meteo foi movida de `useWeather.js` para
+  `services/weatherService.js`, preservando o hook para estado/ciclo de vida e
+  exibindo as unidades e o horário presentes na resposta.
+- As páginas de mapa, alertas, rotas, abrigos e prevenção receberam
+  interações específicas para a função de cada uma. A lista de abrigos não foi
+  preenchida com locais não verificados.
 
 O assistente ajudou a revisar e implementar esses ajustes. README e este
 arquivo também foram atualizados com o apoio da ferramenta.
@@ -68,6 +82,9 @@ servidor, endpoint ou estrutura do banco foi alterada.
 - Em 19/11/2026, `npm run build` e `npm run lint` passaram após os ajustes de
   localização e da página Prevenção.
 - Em 19/11/2026, `npm run test:api` passou com 6 testes.
+- Na revisão final de 19/11/2026, build, lint e os 6 testes existentes da API
+  passaram. O build emitiu o aviso do Vite de bundle JavaScript acima do limite
+  padrão de 500 kB.
 - No navegador, foram verificadas 9 páginas em larguras de 360, 390, 768, 820,
   1366 e 1440 px, além de navegação, filtros, formulários, mapa e clima.
 - Em uma API e um banco temporários isolados, foram testados localização
@@ -82,6 +99,14 @@ servidor, endpoint ou estrutura do banco foi alterada.
 - O logout respondeu HTTP 204; a consulta de sessão retornou `user: null` e
   uma tentativa sem sessão foi recusada com HTTP 401.
 - Uma criação que ultrapassaria o limite recebeu HTTP 429 e não gerou relato.
+- Na revisão final, as seis páginas principais foram verificadas em larguras de
+  360, 390, 768, 820, 1440 px sem rolagem horizontal. Filtros, busca, painéis
+  expansíveis, seleção de pontos e atualização de menu foram exercitados.
+- O endpoint público OSRM respondeu HTTP 200 e retornou uma rota com geometria
+  GeoJSON para uma consulta de conectividade, sem gravar dados no projeto.
+- As consultas `GET` públicas da API de produção (`health`, `region`, `reports`)
+  e a saúde do Render responderam HTTP 200. Não foi feito CRUD em produção nem
+  novo deploy.
 - O navegador também registrou `ERR_ABORTED` em algumas requisições de exclusão
   e logout, inclusive junto de respostas HTTP 204. A causa não foi comprovada;
   por isso, o evento não foi registrado como falha confirmada do servidor.
@@ -93,12 +118,14 @@ servidor, endpoint ou estrutura do banco foi alterada.
 
 Os testes de acessibilidade foram básicos; não foi feita avaliação completa com
 leitor de tela. A busca automática de endereço não foi implementada: o endereço
-ou bairro é digitado como descrição e o ponto é escolhido no mapa. A página
-“Prevenção” ainda depende de conteúdo aprovado pelo grupo. O endereço da
-Vercel e a API Render responderam HTTP 200 em consultas GET de saúde, região e
-relatos em 19/11/2026. Não foi feito CRUD com dados de produção nessa verificação.
-A aplicação também não calcula rotas nem lista abrigos sem dados oficiais
-fornecidos.
+ou bairro é digitado como descrição e o ponto é escolhido no mapa. O serviço
+OSRM é externo, pode ficar indisponível e não avalia alagamentos nem bloqueios
+atuais; por isso, o cálculo fica bloqueado diante de qualquer relato confirmado
+carregado na região. Essa regra é conservadora e não representa avaliação de
+risco individual de cada caminho. Não há abrigos oficiais cadastrados. A página
+da Defesa Civil de São Paulo foi bloqueada pela proteção do site durante a
+verificação automatizada; as páginas do Ministério da Saúde foram acessadas e
+verificadas. Não foi feito CRUD em produção nem novo deploy nesta revisão.
 
 A IA ajudou a acelerar algumas tarefas, mas suas sugestões precisaram ser
 conferidas: uma sugestão pode não corresponder ao código ou ao comportamento

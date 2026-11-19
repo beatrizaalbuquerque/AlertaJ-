@@ -35,20 +35,20 @@ export default function AlertsPage() {
 
       <section aria-label="Resumo das ocorrências" className="grid grid-cols-2 border-y border-white/[0.08] sm:grid-cols-3">
         <div className="border-r border-white/[0.08] py-4 pr-3 sm:pr-5">
-          <p className="text-2xl font-semibold tabular-nums text-white">{activeReports.length}</p>
+          <p className="text-2xl font-semibold tabular-nums text-white">{loading || error ? '—' : activeReports.length}</p>
           <p className="mt-1 text-xs text-gray-500">Ativas</p>
         </div>
         <div className="border-r border-white/[0.08] py-4 pl-3 sm:px-5">
           <p className="inline-flex items-center gap-2 text-2xl font-semibold tabular-nums text-amber-200">
             <CircleHelp size={18} aria-hidden="true" />
-            {unconfirmedCount}
+            {loading || error ? '—' : unconfirmedCount}
           </p>
           <p className="mt-1 text-xs text-gray-500">Aguardando confirmação</p>
         </div>
         <div className="col-span-2 py-4 pl-3 sm:col-span-1 sm:pl-5">
           <p className="inline-flex items-center gap-2 text-2xl font-semibold tabular-nums text-emerald-200">
             <Check size={18} aria-hidden="true" />
-            {confirmedCount}
+            {loading || error ? '—' : confirmedCount}
           </p>
           <p className="mt-1 text-xs text-gray-500">Confirmadas</p>
         </div>

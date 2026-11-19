@@ -121,7 +121,7 @@ export default function SheltersPage() {
           <EmptyState className="border-x-0 border-t-0 rounded-none bg-transparent px-0">
             {locations.length
               ? 'Nenhum local corresponde à busca e aos filtros selecionados.'
-              : 'Nenhum abrigo ou ponto de apoio oficial está cadastrado para Itaquaquecetuba neste momento.'}
+              : 'Os abrigos e pontos de apoio oficiais de Itaquaquecetuba estão em processo de cadastramento. Os locais serão exibidos após a validação das informações.'}
           </EmptyState>
         )}
       </section>
