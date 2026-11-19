@@ -1,7 +1,12 @@
-const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:3000/api')
+const configuredApiUrl = import.meta.env.VITE_API_URL
+const API_URL = (configuredApiUrl || (import.meta.env.DEV ? 'http://localhost:3000/api' : '/api'))
   .replace(/\/$/, '')
 
 async function request(endpoint, options = {}) {
+  if (!API_URL) {
+    throw new Error('API não configurada. Defina VITE_API_URL com a URL pública da API no ambiente de deploy.')
+  }
+
   const response = await fetch(
     `${API_URL}${endpoint}`,
     {

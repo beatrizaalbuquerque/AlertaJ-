@@ -121,9 +121,32 @@ O clima vem da Open-Meteo e não equivale a alerta oficial da Defesa Civil.
 
 ## Deploy
 
-Não há URL de deploy configurada ou registrada neste repositório. A aplicação
-deve ser executada localmente seguindo as instruções acima até que a equipe
-publique e valide um endereço oficial.
+O repositório inclui uma configuração inicial de hospedagem da API no Render
+(`render.yaml`) e de encaminhamento de `/api` pelo Vercel (`vercel.json`). O
+serviço Render usa um disco persistente para o SQLite; esse tipo de serviço
+exige um plano pago. Revise e confirme o custo no painel do Render antes de
+criar o serviço.
+
+Para publicar:
+
+1. Importe este repositório no Render como Blueprint e revise o serviço
+   `alertaja-api`, as variáveis e o disco persistente. O Render gera
+   `SESSION_SECRET` automaticamente.
+2. Crie o serviço e confirme no painel o domínio `onrender.com` atribuído.
+   Se o domínio for diferente de `https://alertaja-api.onrender.com`, atualize
+   o destino do rewrite em `vercel.json` para o domínio real, mantendo o
+   caminho `/api/:path*`.
+3. Na Vercel, configure `VITE_API_URL` como `/api` para produção e publique um
+   novo deploy. Se havia uma URL `localhost` nessa variável, substitua-a.
+4. Verifique `https://alerta-ja.vercel.app/api/health` e depois teste login,
+   cadastro e operações de relatos pela interface.
+
+O proxy mantém as chamadas e os cookies de sessão na origem do front-end. Não
+configure a URL pública do Render diretamente em `VITE_API_URL`, pois a sessão
+usa cookies `SameSite=Strict`. A API permite a origem de produção por meio de
+`FRONTEND_URL`, definida no `render.yaml` como
+`https://alerta-ja.vercel.app`. A publicação precisa ser concluída nas contas
+Render e Vercel da equipe; não há credenciais de hospedagem no repositório.
 
 ## Testes e validação
 
