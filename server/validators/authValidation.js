@@ -1,6 +1,14 @@
 import { ApiError } from '../middlewares/errors.js'
 
+function validateObjectBody(body) {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    throw new ApiError(400, 'INVALID_BODY', 'O corpo da requisição deve ser um objeto JSON.')
+  }
+  return body
+}
+
 export function validateRegistration(body = {}) {
+  body = validateObjectBody(body)
   const name = typeof body.name === 'string' ? body.name.trim() : ''
   const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : ''
   const password = typeof body.password === 'string' ? body.password : ''
@@ -19,6 +27,7 @@ export function validateRegistration(body = {}) {
 }
 
 export function validateLogin(body = {}) {
+  body = validateObjectBody(body)
   const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : ''
   const password = typeof body.password === 'string' ? body.password : ''
 

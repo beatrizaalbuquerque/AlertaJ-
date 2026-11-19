@@ -20,6 +20,18 @@ export function errorHandler(error, _request, response, _next) {
     })
   }
 
+  if (error?.type === 'entity.parse.failed') {
+    return response.status(400).json({
+      error: { code: 'INVALID_JSON', message: 'O corpo da requisição contém JSON inválido.' }
+    })
+  }
+
+  if (error?.type === 'entity.too.large') {
+    return response.status(413).json({
+      error: { code: 'REQUEST_TOO_LARGE', message: 'O corpo da requisição excede o limite permitido.' }
+    })
+  }
+
   console.error(error)
   if (Number.isInteger(error?.status) && error.status >= 400 && error.status < 500) {
     return response.status(error.status).json({

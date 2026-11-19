@@ -2,7 +2,15 @@ import { ApiError } from '../middlewares/errors.js'
 
 const waterLevels = new Set(['baixo', 'medio', 'alto'])
 
+function validateObjectBody(body) {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    throw new ApiError(400, 'INVALID_BODY', 'O corpo da requisição deve ser um objeto JSON.')
+  }
+  return body
+}
+
 export function validateReportInput(body = {}, partial = false) {
+  body = validateObjectBody(body)
   const report = {}
   const allowedFields = new Set([
     'location', 'latitude', 'longitude', 'waterLevel'
@@ -52,6 +60,7 @@ export function validateReportInput(body = {}, partial = false) {
 }
 
 export function validateVote(body = {}) {
+  body = validateObjectBody(body)
   if (!['confirm', 'contest'].includes(body.type)) {
     throw new ApiError(400, 'INVALID_VOTE', 'O voto deve ser confirmação ou contestação.')
   }

@@ -1,133 +1,120 @@
 # Uso de inteligência artificial
 
-Durante o desenvolvimento do AlertaJá, usamos um assistente de IA integrado
-ao VS Code (Copilot SDK) como apoio para entender o código existente, revisar
-problemas do front-end, sugerir ajustes e organizar a documentação. As decisões
-finais e a responsabilidade pelo projeto continuam sendo da equipe.
+Este arquivo registra o uso de IA conhecido no desenvolvimento do AlertaJá.
+Ele não atribui tarefas a integrantes nem substitui a revisão da equipe.
 
-## Exemplos de pedidos feitos
+## Ferramentas utilizadas
 
-- Revisar o front-end atual e melhorar a experiência em celulares sem recriar
-  o projeto.
-- Não alterar o back-end nem substituir informações reais por dados inventados.
-- Verificar rótulos, contraste, foco e navegação por teclado.
-- Investigar os eventos `ERR_ABORTED` sem presumir que fossem falhas do servidor.
-- Conferir a URL padrão da API com o `.env.example`.
-- “Remover a necessidade de digitar manualmente latitude e longitude” e permitir
-  definir o ponto do relato com geolocalização ou no mapa.
-- Revisar a seção “Prevenir” sem inventar conteúdo não aprovado pela equipe.
+- **ChatGPT:** apoio na discussão de requisitos, organização de ideias e
+  avaliação de alternativas para o projeto. As respostas foram tratadas como
+  sugestões; não há atribuição de código específico ao ChatGPT neste registro.
+- **VS Code AI (Copilot SDK):** apoio durante a análise e implementação no
+  repositório aberto no VS Code, incluindo leitura de código existente,
+  alterações pontuais de interface e serviços, documentação e execução de
+  verificações.
 
-## Exemplos de respostas e uso no projeto
+Este registro cobre as interações conhecidas nesta revisão. A equipe deve
+complementá-lo se outras ferramentas ou usos relevantes tiverem ocorrido.
 
-- Para o pedido de facilitar a localização, o assistente identificou que o
-  formulário precisava continuar enviando `location`, `latitude`, `longitude`
-  e `waterLevel`. A solução implementada substituiu a digitação das
-  coordenadas por geolocalização do navegador e seleção de ponto no mapa.
-  Também foi explicado que não havia busca automática de endereço no projeto:
-  o endereço ou bairro é descrito pelo usuário e o ponto correspondente é
-  marcado no mapa.
-- Para o pedido sobre “Prevenir”, a resposta foi manter a página e deixar
-  explícito que as orientações aprovadas ainda não foram cadastradas, em vez de
-  escrever recomendações sem validação do grupo.
-- Na revisão final, a equipe pediu conteúdo preventivo baseado em fontes
-  públicas. Foram incluídas orientações com links para o Ministério da Saúde e
-  para a Defesa Civil de São Paulo, sem inventar contatos de emergência.
-- Na investigação de `ERR_ABORTED`, a conclusão registrada foi que houve
-  respostas HTTP 204, 401 e 429 em operações específicas, mas a causa exata de
-  `ERR_ABORTED` não foi comprovada. O evento não foi descrito como falha
-  confirmada do servidor.
+## Exemplos representativos de interações
 
-## Parte do front-end
+| Ferramenta | Pedido representativo | Resposta ou uso no projeto |
+|---|---|---|
+| ChatGPT | Organizar os requisitos do AlertaJá sem reconstruir o projeto existente. | Apoio à discussão de escopo e alternativas; este registro não atribui alterações específicas de código ao ChatGPT. |
+| VS Code AI (Copilot SDK) | Melhorar a interface React existente sem substituir integrações nem inventar dados. | Análise dos componentes e alterações pontuais de apresentação e interação. |
+| VS Code AI (Copilot SDK) | Consultar rotas sem desenhar trajetos fictícios ou afirmar que são seguras. | Identificação da limitação do OSRM e manutenção do bloqueio geral quando relatos confirmados estão carregados, com aviso explícito na página. |
+| VS Code AI (Copilot SDK) | Organizar a integração Open-Meteo mantendo estado e ciclo de vida no hook. | Requisição separada em `weatherService.js`, com o hook responsável pelo estado da consulta. |
+| VS Code AI (Copilot SDK) | Preencher Prevenção com orientações confiáveis e manter abrigos somente com dados verificáveis. | Página com sete orientações referenciadas; página de abrigos sem registros inventados e com mensagem de cadastramento quando vazia. |
 
-O projeto continua usando as páginas e os componentes React que já existiam.
-O front-end está dividido entre páginas, componentes visuais, hooks e um
-serviço central de requisições HTTP. Os hooks cuidam, entre outras coisas, da
-sessão, dos relatos, da região e do clima.
+Os pedidos estão resumidos, não são transcrições completas. As respostas
+ajudaram a identificar arquivos, propor alterações e descrever limitações. A
+decisão de aceitar, ajustar ou rejeitar cada sugestão cabe à equipe.
 
-Nos ajustes recentes:
+## Aplicação no projeto
 
-- O menu pode ser aberto e fechado em telas pequenas.
-- A tela de relatos mostra estados de carregamento, erro, lista vazia e
-  confirmação das operações.
-- A exclusão pede confirmação na própria interface.
-- Os campos têm rótulos e indicadores de foco para navegação por teclado.
-- O formulário de relatos oferece geolocalização do dispositivo e seleção
-  manual do ponto no mapa municipal, sem exigir que a pessoa conheça
-  coordenadas. Endereço ou bairro continua sendo informado como descrição.
-- O cartão “Relatos registrados” no dashboard é um link para a lista e indica
-  visualmente que pode ser aberto.
-- O serviço HTTP usa `http://localhost:3000/api` em desenvolvimento local e
-  `/api` em produção, salvo configuração por `VITE_API_URL`.
-- A revisão final adicionou consulta de trajetos com OSRM e seleção de origem e
-  destino no mapa. O assistente verificou que o serviço respondeu com geometria
-  GeoJSON; como ele não permite excluir pontos confirmados, a interface bloqueia
-  o cálculo quando há relatos confirmados e os exibe como marcadores. Os
-  resultados não são chamados de seguros.
-- A chamada à Open-Meteo foi movida de `useWeather.js` para
-  `services/weatherService.js`, preservando o hook para estado/ciclo de vida e
-  exibindo as unidades e o horário presentes na resposta.
-- As páginas de mapa, alertas, rotas, abrigos e prevenção receberam
-  interações específicas para a função de cada uma. A lista de abrigos não foi
-  preenchida com locais não verificados.
+Com apoio do VS Code AI, foram analisados e ajustados arquivos existentes de
+páginas, componentes, hooks e serviços. Entre as funcionalidades e revisões
+documentadas no projeto estão:
 
-O assistente ajudou a revisar e implementar esses ajustes. README e este
-arquivo também foram atualizados com o apoio da ferramenta.
+- estados de carregamento, erro, lista vazia e feedback para ações;
+- menu móvel, filtros, busca e painéis expansíveis;
+- seleção de pontos no mapa para origem e destino e consulta de trajetos pelo
+  serviço público OSRM;
+- bloqueio da consulta de rotas quando existem relatos confirmados carregados,
+  pois o OSRM não recebe os pontos de alagamento como restrições;
+- chamada Open-Meteo centralizada em `src/assets/services/weatherService.js`,
+  com estado e ciclo de vida mantidos em `useWeather.js`;
+- conteúdo de prevenção com sete orientações e links para o Ministério da Saúde
+  e a Defesa Civil do Estado de São Paulo;
+- mensagem de cadastramento na página de abrigos quando não há locais
+  retornados pela API, sem criar nomes ou endereços.
 
-As sugestões foram comparadas com o código do projeto e verificadas com build,
-lint e testes no navegador. Na melhoria de localização, nenhuma regra do
-servidor, endpoint ou estrutura do banco foi alterada.
+As alterações não autorizam afirmar que todo o código foi gerado por IA. A
+equipe continua responsável por revisar e compreender o código entregue.
 
-## Verificações registradas
+## Validação conhecida
 
-- Em 19/11/2026, `npm run build` e `npm run lint` passaram após os ajustes de
-  localização e da página Prevenção.
-- Em 19/11/2026, `npm run test:api` passou com 6 testes.
-- Na revisão final de 19/11/2026, build, lint e os 6 testes existentes da API
-  passaram. O build emitiu o aviso do Vite de bundle JavaScript acima do limite
-  padrão de 500 kB.
-- No navegador, foram verificadas 9 páginas em larguras de 360, 390, 768, 820,
-  1366 e 1440 px, além de navegação, filtros, formulários, mapa e clima.
-- Em uma API e um banco temporários isolados, foram testados localização
-  concedida e recusada, rejeição de ponto fora da região, seleção pelo mapa e
-  criação de relato. A requisição manteve latitude e longitude como números.
-  O banco temporário foi removido após o teste.
-- A página “Prevenção” abriu e informou que ainda não há conteúdo aprovado. Em
-  360 px, a tela testada não apresentou overflow horizontal.
-- Um teste de interface com conta sintética cobriu criação, consulta após
-  recarregar, edição, exclusão e logout.
-- A exclusão respondeu HTTP 204; após atualizar, o relato não apareceu.
-- O logout respondeu HTTP 204; a consulta de sessão retornou `user: null` e
-  uma tentativa sem sessão foi recusada com HTTP 401.
-- Uma criação que ultrapassaria o limite recebeu HTTP 429 e não gerou relato.
-- Na revisão final, as seis páginas principais foram verificadas em larguras de
-  360, 390, 768, 820, 1440 px sem rolagem horizontal. Filtros, busca, painéis
-  expansíveis, seleção de pontos e atualização de menu foram exercitados.
-- O endpoint público OSRM respondeu HTTP 200 e retornou uma rota com geometria
-  GeoJSON para uma consulta de conectividade, sem gravar dados no projeto.
-- As consultas `GET` públicas da API de produção (`health`, `region`, `reports`)
-  e a saúde do Render responderam HTTP 200. Não foi feito CRUD em produção nem
-  novo deploy.
-- O navegador também registrou `ERR_ABORTED` em algumas requisições de exclusão
-  e logout, inclusive junto de respostas HTTP 204. A causa não foi comprovada;
-  por isso, o evento não foi registrado como falha confirmada do servidor.
-- Os relatos temporários foram removidos e a lista vazia foi confirmada em nova
-  consulta. A conta sintética continua cadastrada: não há procedimento
-  autorizado de remoção documentado e não foi feita alteração direta no banco.
+Em 19/11/2026, durante a revisão registrada:
 
-## Limitações
+- `npm run build` passou, com aviso do Vite de que o bundle JavaScript excede
+  500 kB após minificação antes da divisão de código.
+- `npm run lint` passou.
+- Na rodada final desta revisão, `npm run test:api` passou com 9 testes,
+  incluindo payload inválido, CORS/origem, persistência SQLite e caminhos de
+  erro/timeout dos clientes Open-Meteo e OSRM.
+- Foram verificadas páginas e interações no navegador em larguras de 360, 390,
+  820 e 1440 px, incluindo navegação móvel, painéis expansíveis e ausência de
+  rolagem horizontal nas telas verificadas.
+- A consulta Open-Meteo e uma consulta de conectividade ao serviço OSRM
+  retornaram dados; isso não comprova disponibilidade contínua desses serviços.
+- Leituras públicas da API publicada foram verificadas, mas não foi realizado
+  CRUD em produção nem novo deploy.
+- A divisão sob demanda das páginas foi verificada por build: o bundle de
+  entrada ficou em aproximadamente 276 kB e nenhum chunk ultrapassou 500 kB.
+- Build e lint passaram novamente após os ajustes da API e dos timeouts. O
+  bundle inicial permaneceu em aproximadamente 276 kB, sem chunks acima de
+  500 kB.
+- Em API e SQLite temporários, foram testados pela interface cadastro, sessão
+  após recarga, logout, login válido, mensagem para senha incorreta e mensagem
+  para e-mail já cadastrado. A sessão foi consultada no servidor; nenhuma
+  operação de autenticação foi feita na produção.
+- O servidor local foi reiniciado com o mesmo banco e segredo temporários; uma
+  sessão e um relato sobreviveram ao reinício. O relato foi removido e a sessão
+  encerrada antes da limpeza do banco temporário.
+- Open-Meteo e OSRM responderam HTTP 200 na verificação externa. Os clientes
+  impõem timeout de 12 segundos e os testes automatizados verificam caminhos de
+  timeout/erro sem tratar respostas simuladas como dados reais.
 
-Os testes de acessibilidade foram básicos; não foi feita avaliação completa com
-leitor de tela. A busca automática de endereço não foi implementada: o endereço
-ou bairro é digitado como descrição e o ponto é escolhido no mapa. O serviço
-OSRM é externo, pode ficar indisponível e não avalia alagamentos nem bloqueios
-atuais; por isso, o cálculo fica bloqueado diante de qualquer relato confirmado
-carregado na região. Essa regra é conservadora e não representa avaliação de
-risco individual de cada caminho. Não há abrigos oficiais cadastrados. A página
-da Defesa Civil de São Paulo foi bloqueada pela proteção do site durante a
-verificação automatizada; as páginas do Ministério da Saúde foram acessadas e
-verificadas. Não foi feito CRUD em produção nem novo deploy nesta revisão.
+Verificações anteriores documentadas no histórico incluíram o CRUD de relatos
+com dados de teste, regras da API e consultas públicas. Isso não substitui uma
+repetição desses fluxos nesta revisão.
 
-A IA ajudou a acelerar algumas tarefas, mas suas sugestões precisaram ser
-conferidas: uma sugestão pode não corresponder ao código ou ao comportamento
-real. A equipe deve revisar o que será entregue e confirmar eventuais usos de
-outras ferramentas de IA que não estejam registrados aqui.
+Nesta rodada de ajustes finais, a primeira tentativa de `npm ci` retornou
+`EPERM` ao tentar substituir o módulo nativo
+`lightningcss.win32-x64-msvc.node`, que estava em uso. Após encerrar o processo
+Vite do projeto e repetir o comando, a instalação parou ao compilar
+`better-sqlite3`: não há Python instalado/configurado no ambiente para o
+`node-gyp` (Node.js v24.19.0). Portanto, a instalação limpa não foi concluída.
+Como alternativa de validação, `npm ci --ignore-scripts` instalou os pacotes
+necessários para as verificações; em seguida, build, lint e os testes da API
+passaram. Essa alternativa não substitui uma instalação limpa padrão e não
+remove nem desativa os testes. Ao final, a instalação alternativa foi repetida
+após encerrar os servidores locais e novamente completou. O binário Windows x64
+do pacote carregou diretamente em Node.js v24.19.0 e respondeu a consultas
+SQLite. As instruções de instalação no README distinguem a instalação com
+toolchain da alternativa específica para esse pacote e ambiente.
+
+## Limitações e análise crítica
+
+- O OSRM calcula trajetos a partir da rede viária disponível, mas não analisa
+  alagamentos, bloqueios ou condições em tempo real. Por isso, o AlertaJá não
+  apresenta os resultados como seguros e bloqueia a consulta quando há relatos
+  confirmados carregados. Não há desvio individual de ocorrências.
+- Open-Meteo e OSRM são serviços externos e podem ficar indisponíveis.
+- A lista de abrigos depende de dados cadastrados e verificáveis. Nenhum local
+  deve ser inventado para preencher a página.
+- Não foi feita avaliação completa de acessibilidade com leitor de tela.
+- A IA acelera exploração e implementação, mas pode produzir informações
+  incorretas, desatualizadas ou incompatíveis com o código. As alterações
+  precisam ser conferidas por meio de leitura do projeto, build, lint, testes e
+  validação funcional adequada.

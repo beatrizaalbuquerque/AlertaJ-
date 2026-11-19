@@ -45,16 +45,121 @@ async function startApi(pilotArea = polygon) {
 }
 
 function request(api, endpoint, { method = 'GET', body, cookie } = {}) {
+  const hasBody = body !== undefined
   return fetch(`${api.baseUrl}${endpoint}`, {
     method,
     headers: {
-      ...(body ? { 'Content-Type': 'application/json' } : {}),
+      ...(hasBody ? { 'Content-Type': 'application/json' } : {}),
       ...(cookie ? { Cookie: cookie } : {}),
       ...(method !== 'GET' ? { Origin: origin } : {})
     },
-    ...(body ? { body: JSON.stringify(body) } : {})
+    ...(hasBody ? { body: JSON.stringify(body) } : {})
   })
 }
+
+test('returns consistent client errors for non-object and malformed JSON bodies', async t => {
+  const api = await startApi()
+  t.after(() => api.close())
+  const resident = await register(api, 'invalid-body@example.com')
+
+  const registerNull = await request(api, '/auth/register', {
+    method: 'POST',
+    body: null
+  })
+  assert.equal(registerNull.status, 400)
+  assert.equal((await registerNull.json()).error.code, 'INVALID_BODY')
+
+  const loginNull = await request(api, '/auth/login', {
+    method: 'POST',
+    body: null
+  })
+  assert.equal(loginNull.status, 400)
+  assert.equal((await loginNull.json()).error.code, 'INVALID_BODY')
+
+  const createNull = await request(api, '/reports', {
+    method: 'POST',
+    cookie: resident.cookie,
+    body: null
+  })
+  assert.equal(createNull.status, 400)
+  assert.equal((await createNull.json()).error.code, 'INVALID_BODY')
+
+  const report = await (await request(api, '/reports', {
+    method: 'POST',
+    cookie: resident.cookie,
+    body: reportInput
+  })).json()
+  const updateNull = await request(api, `/reports/${report.report.id}`, {
+    method: 'PUT',
+    cookie: resident.cookie,
+    body: null
+  })
+  assert.equal(updateNull.status, 400)
+  assert.equal((await updateNull.json()).error.code, 'INVALID_BODY')
+
+  const voteNull = await request(api, `/reports/${report.report.id}/votes`, {
+    method: 'POST',
+    cookie: resident.cookie,
+    body: null
+  })
+  assert.equal(voteNull.status, 400)
+  assert.equal((await voteNull.json()).error.code, 'INVALID_BODY')
+
+  const malformedJson = await fetch(`${api.baseUrl}/auth/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Origin: origin
+    },
+    body: '{"email":'
+  })
+  assert.equal(malformedJson.status, 400)
+  assert.deepEqual((await malformedJson.json()).error, {
+    code: 'INVALID_JSON',
+    message: 'O corpo da requisição contém JSON inválido.'
+  })
+
+  const oversizedJson = await fetch(`${api.baseUrl}/auth/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Origin: origin
+    },
+    body: JSON.stringify({ email: 'oversized@example.com', padding: 'x'.repeat(21_000) })
+  })
+  assert.equal(oversizedJson.status, 413)
+  assert.deepEqual((await oversizedJson.json()).error, {
+    code: 'REQUEST_TOO_LARGE',
+    message: 'O corpo da requisição excede o limite permitido.'
+  })
+})
+
+test('allows the configured frontend origin and rejects cross-origin writes', async t => {
+  const api = await startApi()
+  t.after(() => api.close())
+
+  const allowedRead = await fetch(`${api.baseUrl}/health`, {
+    headers: { Origin: origin }
+  })
+  assert.equal(allowedRead.headers.get('access-control-allow-origin'), origin)
+  assert.equal(allowedRead.headers.get('access-control-allow-credentials'), 'true')
+
+  const forbiddenWrite = await fetch(`${api.baseUrl}/auth/register`, {
+    method: 'POST',
+    headers: {
+      Origin: 'https://unexpected.example',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      name: 'Blocked User',
+      email: 'blocked@example.com',
+      password: 'secure-password-123'
+    })
+  })
+  assert.equal(forbiddenWrite.status, 403)
+  assert.equal((await forbiddenWrite.json()).error.code, 'ORIGIN_NOT_ALLOWED')
+  assert.equal(api.db.prepare('SELECT COUNT(*) AS count FROM users').get().count, 0)
+})
 
 async function register(api, email) {
   const response = await request(api, '/auth/register', {

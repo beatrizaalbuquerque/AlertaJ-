@@ -60,7 +60,7 @@ export function createApp({
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type']
   }))
-  app.use(express.json({ limit: '20kb' }))
+  app.use(express.json({ limit: '20kb', strict: false }))
   app.use(session({
     name: 'alertaja.sid',
     secret: sessionSecret,

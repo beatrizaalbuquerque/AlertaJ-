@@ -1,3 +1,5 @@
+import { withTimeout } from './fetchWithTimeout.js'
+
 const OPEN_METEO_URL = 'https://api.open-meteo.com/v1/forecast'
 const currentFields = ['temperature_2m', 'precipitation', 'rain']
 
@@ -15,24 +17,28 @@ export async function fetchCurrentWeather(latitude, longitude, signal) {
     timezone: 'auto'
   })
 
-  const response = await fetch(`${OPEN_METEO_URL}?${params}`, { signal })
-  if (!response.ok) {
-    throw new Error(`Open-Meteo respondeu com erro (${response.status}).`)
-  }
+  return withTimeout(async timeoutSignal => {
+    const response = await fetch(`${OPEN_METEO_URL}?${params}`, {
+      signal: timeoutSignal
+    })
+    if (!response.ok) {
+      throw new Error(`Open-Meteo respondeu com erro (${response.status}).`)
+    }
 
-  const data = await response.json()
-  const hasCurrentData = currentFields.every(field =>
-    Number.isFinite(data.current?.[field]) &&
-    typeof data.current_units?.[field] === 'string'
-  )
+    const data = await response.json()
+    const hasCurrentData = currentFields.every(field =>
+      Number.isFinite(data.current?.[field]) &&
+      typeof data.current_units?.[field] === 'string'
+    )
 
-  if (
-    !hasCurrentData ||
-    typeof data.current.time !== 'string' ||
-    typeof data.timezone !== 'string'
-  ) {
-    throw new Error('A resposta da Open-Meteo não contém os dados atuais esperados.')
-  }
+    if (
+      !hasCurrentData ||
+      typeof data.current.time !== 'string' ||
+      typeof data.timezone !== 'string'
+    ) {
+      throw new Error('A resposta da Open-Meteo não contém os dados atuais esperados.')
+    }
 
-  return data
+    return data
+  }, signal, 'A consulta à Open-Meteo excedeu o tempo limite. Tente novamente mais tarde.')
 }

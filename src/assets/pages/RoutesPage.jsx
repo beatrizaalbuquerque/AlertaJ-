@@ -90,6 +90,14 @@ export default function RoutesPage() {
         </p>
       </header>
 
+      <FeedbackMessage variant="info" className="border-amber-400/20 bg-amber-400/[0.04] text-amber-100">
+        O OSRM calcula trajetos pela rede viária, mas não consegue evitar
+        individualmente alagamentos nem verificar bloqueios ou condições atuais
+        das ruas. Mesmo sem relatos confirmados, os resultados não são rotas
+        verificadas como seguras. Com relatos confirmados carregados, a consulta
+        é bloqueada.
+      </FeedbackMessage>
+
       {reportsError || regionError ? (
         <FeedbackMessage variant="error">
           <span>{reportsError || regionError}</span>

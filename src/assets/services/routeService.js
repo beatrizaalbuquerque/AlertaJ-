@@ -1,3 +1,5 @@
+import { withTimeout } from './fetchWithTimeout.js'
+
 const ROUTING_BASE_URL = 'https://router.project-osrm.org/route/v1/driving'
 
 function isCoordinatePair(point) {
@@ -26,40 +28,42 @@ export async function fetchAlternativeRoutes(origin, destination, signal) {
     steps: 'false'
   })
 
-  const response = await fetch(
-    `${ROUTING_BASE_URL}/${coordinates}?${params}`,
-    { signal }
-  )
-
-  if (!response.ok) {
-    throw new Error(`O serviço de rotas respondeu com erro (${response.status}). Tente novamente mais tarde.`)
-  }
-
-  const data = await response.json()
-  if (data.code !== 'Ok' || !Array.isArray(data.routes)) {
-    if (data.code === 'NoRoute') {
-      throw new Error('O serviço não encontrou um trajeto entre os pontos selecionados.')
-    }
-    throw new Error('O serviço de rotas retornou uma resposta inválida.')
-  }
-
-  const routes = data.routes
-    .filter(route =>
-      Array.isArray(route.geometry?.coordinates) &&
-      route.geometry.coordinates.length > 1 &&
-      Number.isFinite(route.distance) &&
-      Number.isFinite(route.duration)
+  return withTimeout(async timeoutSignal => {
+    const response = await fetch(
+      `${ROUTING_BASE_URL}/${coordinates}?${params}`,
+      { signal: timeoutSignal }
     )
-    .map((route, index) => ({
-      id: index,
-      coordinates: route.geometry.coordinates.map(([longitude, latitude]) => [latitude, longitude]),
-      distance: route.distance,
-      duration: route.duration
-    }))
 
-  if (!routes.length) {
-    throw new Error('O serviço não retornou trajetos válidos para os pontos selecionados.')
-  }
+    if (!response.ok) {
+      throw new Error(`O serviço de rotas respondeu com erro (${response.status}). Tente novamente mais tarde.`)
+    }
 
-  return routes
+    const data = await response.json()
+    if (data.code !== 'Ok' || !Array.isArray(data.routes)) {
+      if (data.code === 'NoRoute') {
+        throw new Error('O serviço não encontrou um trajeto entre os pontos selecionados.')
+      }
+      throw new Error('O serviço de rotas retornou uma resposta inválida.')
+    }
+
+    const routes = data.routes
+      .filter(route =>
+        Array.isArray(route.geometry?.coordinates) &&
+        route.geometry.coordinates.length > 1 &&
+        Number.isFinite(route.distance) &&
+        Number.isFinite(route.duration)
+      )
+      .map((route, index) => ({
+        id: index,
+        coordinates: route.geometry.coordinates.map(([longitude, latitude]) => [latitude, longitude]),
+        distance: route.distance,
+        duration: route.duration
+      }))
+
+    if (!routes.length) {
+      throw new Error('O serviço não retornou trajetos válidos para os pontos selecionados.')
+    }
+
+    return routes
+  }, signal, 'A consulta ao serviço de rotas excedeu o tempo limite. Tente novamente mais tarde.')
 }
